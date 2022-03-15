@@ -15,7 +15,7 @@ export default function Home() {
           "mdmdmdmdm",
           "mdmdmdm",
           "msmwm"
-        ].map(el => {return <div className={styles.ctn}>{el}</div>})
+        ].map((el,idx) => {return <div key={idx} className={styles.ctn}>{el}</div>})
       }
       
 
