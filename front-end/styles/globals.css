@@ -1,0 +1,32 @@
+
+:root {
+  --bg-color-0: rgb(20, 20, 20);
+  --bg-color-1: rgb(22, 22, 22);
+  --bg-color-2: rgb(24, 24, 24);
+
+  --font-color-0: rgb(197, 190, 190);
+  --font-color-1: rgb(212, 157, 84);
+  --font-color-2: rgb(17, 122, 17);
+}
+
+
+
+
+html,
+body {
+  background-color: var(--bg-color-0);
+  color: var(--font-color-0);
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}

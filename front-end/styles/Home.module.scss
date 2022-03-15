@@ -1,0 +1,33 @@
+
+
+.title{
+
+    h1{
+        color: var(--font-color-2);
+    }
+
+    width: 100%;
+    display: grid;
+    place-items: center;
+
+}
+
+
+.ctn{
+
+
+        background-color: var(--bg-color-1);
+
+        width: 50%;
+        height: 50px;
+
+        margin: 10px;
+        padding: 10px;
+
+        
+
+}
+
+.ctn:hover{
+    background-color: var(--bg-color-2);
+}
