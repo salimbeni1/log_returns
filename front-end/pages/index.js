@@ -1,23 +1,37 @@
-
 import styles from '../styles/Home.module.scss'
 
 import cytoscape from 'cytoscape';
-import {useEffect} from 'react'
+import d3Force from 'cytoscape-d3-force';
+import cola from 'cytoscape-cola';
 
+import {useEffect, useRef} from 'react'
+
+import label_0 from '../dataG/label_0.json'
+import label_1000 from '../dataG/label_1000.json'
+import label_2000 from '../dataG/label_2000.json'
+import label_3000 from '../dataG/label_3000.json'
+import label_4000 from '../dataG/label_4000.json'
+import label_5000 from '../dataG/label_5000.json'
+import label_6000 from '../dataG/label_6000.json'
+import label_7000 from '../dataG/label_7000.json'
+
+
+cytoscape.use( d3Force );
+cytoscape.use( cola );
 
 
 
 const getRandomElement = (N) => {
 
-  var elements = [];
+  var elements = []
 
     for (let i = 1; i < N; i++) {
-      elements.push({ data: { id: ''+i  , label: 'Node '+i } })
+      elements.push({  id: 'a'+i  ,data: { id: 'a'+i  , label: 'Node '+i } })
     }
     for (let i = 1; i < N; i++) {
       for (let j = 1; j < N; j++) {
         if(Math.floor((Math.random() * 50)**2) === 1) 
-          elements.push({ data: { id: ''+i+''+j,  source: ''+i, target: ''+j , value: i} })
+          elements.push({ id: ''+i+''+j,data: { id: ''+i+''+j,  source: 'a'+i, target: 'a'+j , value: i} })
       }
     }
 
@@ -30,199 +44,68 @@ const getRandomElement = (N) => {
 
 export default function Home() {
 
-  var cy = null
-  var ly = null
+  const cy = useRef(null)
+  const ly = useRef(null)
+
+  const cnt_arr_el = useRef(0)
+
+  const arr_elements = [ label_0,label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000 ]
+
 
   var myInterval = null
 
-  let layout = {
-    name: 'cose',
-  
-    // Called on `layoutready`
-    ready: function(){},
-  
-    // Called on `layoutstop`
-    stop: function(){},
-  
-    // Whether to animate while running the layout
-    // true : Animate continuously as the layout is running
-    // false : Just show the end result
-    // 'end' : Animate with the end result, from the initial positions to the end positions
-    animate: false,
-  
-    // Easing of the animation for animate:'end'
-    animationEasing: undefined,
-  
-    // The duration of the animation for animate:'end'
-    animationDuration: undefined,
-  
-    // A function that determines whether the node should be animated
-    // All nodes animated by default on animate enabled
-    // Non-animated nodes are positioned immediately when the layout starts
-    animateFilter: function ( node, i ){ return true; },
-  
-  
-    // The layout animates only after this many milliseconds for animate:true
-    // (prevents flashing on fast runs)
-    animationThreshold: 250,
-  
-    // Number of iterations between consecutive screen positions update
-    refresh: 50,
-  
-    // Whether to fit the network view after when done
-    fit: true,
-  
-    // Padding on fit
-    padding: 30,
-  
-    // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-    boundingBox: undefined,
-  
-    // Excludes the label when calculating node bounding boxes for the layout algorithm
-    nodeDimensionsIncludeLabels: false,
-  
-    // Randomize the initial positions of the nodes (true) or use existing positions (false)
-    randomize: false,
-  
-    // Extra spacing between components in non-compound graphs
-    componentSpacing: 40,
-  
-    // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: function( node ){ return 2048; },
-  
-    // Node repulsion (overlapping) multiplier
-    nodeOverlap: 4,
-  
-    // Ideal edge (non nested) length
-    idealEdgeLength: function( edge ){ return edge._private.data.value; },
-  
-    // Divisor to compute edge forces
-    edgeElasticity: function( edge ){ return edge._private.data.value; },
-  
-    // Nesting factor (multiplier) to compute ideal edge length for nested edges
-    nestingFactor: 1.2,
-  
-    // Gravity force (constant)
-    gravity: 1,
-  
-    // Maximum number of iterations to perform
-    numIter: 1000,
-  
-    // Initial temperature (maximum node displacement)
-    initialTemp: 1000,
-  
-    // Cooling factor (how the temperature is reduced between consecutive iterations
-    coolingFactor: 0.99,
-  
-    // Lower temperature threshold (below this point the layout will end)
-    minTemp: 1.0
+  const cola_layout = {
+    name: 'cola',
+    infinite: true,
+    fit: false,
+    centerGraph: true,
+    nodeSpacing: function( node ){ return 1; }, // space around node
+    edgeLength:  function( edge ){ return edge.data("value")*1000; },
+
   }
 
-  let layout2 = {
-    name: 'cose',
-  
-    // Called on `layoutready`
-    ready: function(){},
-  
-    // Called on `layoutstop`
-    stop: function(){},
-  
-    // Whether to animate while running the layout
-    // true : Animate continuously as the layout is running
-    // false : Just show the end result
-    // 'end' : Animate with the end result, from the initial positions to the end positions
-    animate: 'end',
-  
-    // Easing of the animation for animate:'end'
-    animationEasing: undefined,
-  
-    // The duration of the animation for animate:'end'
-    animationDuration: undefined,
-  
-    // A function that determines whether the node should be animated
-    // All nodes animated by default on animate enabled
-    // Non-animated nodes are positioned immediately when the layout starts
-    animateFilter: function ( node, i ){ return true; },
-  
-  
-    // The layout animates only after this many milliseconds for animate:true
-    // (prevents flashing on fast runs)
-    animationThreshold: 250,
-  
-    // Number of iterations between consecutive screen positions update
-    refresh: 10,
-  
-    // Whether to fit the network view after when done
-    fit: true,
-  
-    // Padding on fit
-    padding: 30,
-  
-    // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-    boundingBox: undefined,
-  
-    // Excludes the label when calculating node bounding boxes for the layout algorithm
-    nodeDimensionsIncludeLabels: false,
-  
-    // Randomize the initial positions of the nodes (true) or use existing positions (false)
-    randomize: false,
-  
-    // Extra spacing between components in non-compound graphs
-    componentSpacing: 40,
-  
-    // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: function( node ){ return 2048; },
-  
-    // Node repulsion (overlapping) multiplier
-    nodeOverlap: 4,
-  
-    // Ideal edge (non nested) length
-    idealEdgeLength: function( edge ){ return edge._private.data.value; },
-  
-    // Divisor to compute edge forces
-    edgeElasticity: function( edge ){ return edge._private.data.value; },
-  
-    // Nesting factor (multiplier) to compute ideal edge length for nested edges
-    nestingFactor: 1.2,
-  
-    // Gravity force (constant)
-    gravity: 1,
-  
-    // Maximum number of iterations to perform
-    numIter: 1000,
-  
-    // Initial temperature (maximum node displacement)
-    initialTemp: 1000,
-  
-    // Cooling factor (how the temperature is reduced between consecutive iterations
-    coolingFactor: 0.99,
-  
-    // Lower temperature threshold (below this point the layout will end)
-    minTemp: 1.0
-  }
+
 
   useEffect(() => {
 
-    
-    
+    const elements= arr_elements[cnt_arr_el.current]
 
-    cy = cytoscape({
+    cy.current = cytoscape({
       container: document.getElementById('cy'),
-      elements: getRandomElement(100),
+      elements,
+      style: [
+        {
+          selector: 'edge',
+          style: {
+            'opacity' : (e)=>{ 
+            let max = 2.0
+            let min = 1.3
+            return Math.min(1, Math.max(0, (e.data("value")-min)/(max-min)))
+            }
+          }
+        }
+      ],
+      layout: cola_layout
+
     });
 
-    ly = cy.layout(layout);
-    ly.run()
-  
+    cy.current.on('tap','edge', function(e){
+      console.log(e.target.data())
+    })
+    cy.current.on('tap','node', function(e){
+      console.log(e.target.data())
+    })
+
     return () => {}
   }, [])
 
 
   const updateRandomGraph = () =>{
-    console.log("updateRandomGraph");
-    cy.json({elements:getRandomElement(100)})
-    ly = cy.layout(layout2)
-    ly.run()
+    cy.current.json({elements:arr_elements[ cnt_arr_el.current % 8 ]})
+    ly.current = cy.current.layout(cola_layout)
+    ly.current.run()
+
+    cnt_arr_el.current += 1;
   }
 
  
@@ -237,20 +120,35 @@ export default function Home() {
       </header>
 
 
+
       <button onClick={ e => {updateRandomGraph()}}>new Graph</button>
 
       <button onClick={ e => {
-        myInterval = setInterval(updateRandomGraph, 1500)}
-        }> play </button>
+        console.log("label_0");
+        cy.current.json({elements:label_0})
+        ly.current = cy.current.layout(cola_layout)
+        ly.current.run()
+      }}>label_0</button>
+
+      <button onClick={ e => {
+          console.log("label_0");
+          cy.current.json({elements:label_1000})
+          ly.current = cy.current.layout(cola_layout)
+          ly.current.run()
+      }}>label_1000</button>
+
+      <button onClick={ e => {
+        myInterval = setInterval(updateRandomGraph, 1000)}
+      }> play </button>
 
       <button onClick={ e => {
         console.log("clear interval");
         clearInterval(myInterval)
         
-        } }> stop </button>
+      }}> stop </button>
 
 
-      <div id="cy" style={{width:"300px",height:"300px",border:"1px solid black"}}></div>
+      <div id="cy" style={{width:"1000px",height:"1000px",border:"1px solid black"}}></div>
 
       
 

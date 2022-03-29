@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "cytoscape": "^3.21.0",
+    "cytoscape-cola": "^2.5.1",
+    "cytoscape-d3-force": "^1.1.4",
     "next": "12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
