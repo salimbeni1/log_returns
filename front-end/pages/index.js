@@ -1,11 +1,15 @@
 import styles from '../styles/Home.module.scss'
 
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import GraphApp from '../components/GraphApp'
+import { AboutUs } from '../components/AboutUs'
+import { TheProject } from '../components/TheProject'
 
 
 
 export default function Home() {
+
+    const [selected_window, setSelected_window] = useState(0)
 
 
   return (
@@ -13,14 +17,23 @@ export default function Home() {
 
       <header className={styles.header}>
          <h1>LOG RETURNS</h1> 
-         <div> the project </div>
-         <div> real time monitor </div>
-         <div> about us </div>
+         <div className={styles.btn} onClick={() => setSelected_window(0)}> preview </div>
+         <div className={styles.btn} onClick={() => setSelected_window(1)}> the project </div>
+         <div className={styles.btn} onClick={() => setSelected_window(2)}> real time monitor </div>
+         <div className={styles.btn} onClick={() => setSelected_window(3)}> about us </div>
       </header>
 
 
       <div className={styles.app}>
-        <GraphApp></GraphApp>
+
+        {selected_window === 0 ? <GraphApp/>: <></>}
+
+        {selected_window === 1 ? <TheProject/>: <></>}
+
+        {selected_window === 2 ? <GraphApp/>: <></>}
+
+        {selected_window === 3 ? <AboutUs/>: <></>}
+
       </div>
       
 

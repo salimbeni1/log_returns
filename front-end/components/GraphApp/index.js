@@ -70,7 +70,7 @@ export default function GraphApp() {
     fit: false,
     centerGraph: true,
     nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return edge.data("value")*1000; },
+    edgeLength:  function( edge ){ return edge.data("value")*1000 },
 
   }
 
@@ -215,7 +215,7 @@ export default function GraphApp() {
       <div className={styles.navbar}>
             
           <FaPlay onClick={ e => {
-              myInterval = setInterval(updateRandomGraph, 1000)}
+              myInterval = setInterval(updateRandomGraph, 2000)}
           }/>
 
           <FaStop onClick={ e => {
@@ -232,6 +232,8 @@ export default function GraphApp() {
       
       <div style={{width:"30%",height:"100%", border:"10px solid black" , padding:"10px"}}>
 
+      {selected_node.label !== "SELECT A NODE" ?<>
+
         <h1>
           Node : {selected_node.label}
         </h1>
@@ -242,6 +244,8 @@ export default function GraphApp() {
         <div style={{overflow:"scroll" , height:"400px"}}>
           {selected_node.edges.map( (e,idx) => <p key={idx}> {e.node.label} {e.value}</p>)}
         </div>
+        </> : <h1>Click on a Node to get more information</h1>
+      }
         
 
       </div>
