@@ -4,7 +4,7 @@ import d3Force from 'cytoscape-d3-force';
 import cola from 'cytoscape-cola';
 import popper from "cytoscape-popper";
 
-import styles from './GraphApp.module.scss'
+import styles from './ConnectedGraphApp.module.scss'
 
 import {useEffect, useRef , useState} from 'react'
 
@@ -43,12 +43,14 @@ const getRandomElement = (N) => {
 }
 
 
-export default function GraphApp() {
+export default function ConnectedGraphApp() {
 
   const cy = useRef(null)
   const ly = useRef(null)
 
   const cnt_arr_el = useRef(0)
+
+  const [serverUrl, setServerUrl] = useState("http://localhost:8080")
 
 
   const [selected_node, setSelected_node] = useState({
@@ -184,7 +186,11 @@ export default function GraphApp() {
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
 
 
-      
+      <div id="serverUrl" className={styles.serverUrl}>
+        <h3>Enter server url</h3> 
+        <input type="text" value={serverUrl} onChange={(e) => setServerUrl(e.target.value)}></input>  
+        <button onClick={(e) => {document.getElementById('serverUrl').style.display = "none"}}>OK</button> 
+      </div>
 
       <div className={styles.navbar}>
             

@@ -2,6 +2,7 @@ import styles from '../styles/Home.module.scss'
 
 import {useEffect, useRef, useState} from 'react'
 import GraphApp from '../components/GraphApp'
+import ConnectedGraphApp from '../components/ConnectedGraphApp'
 import { AboutUs } from '../components/AboutUs'
 import { TheProject } from '../components/TheProject'
 
@@ -30,7 +31,7 @@ export default function Home() {
 
         {selected_window === 1 ? <TheProject/>: <></>}
 
-        {selected_window === 2 ? <GraphApp/>: <></>}
+        {selected_window === 2 ? <ConnectedGraphApp/>: <></>}
 
         {selected_window === 3 ? <AboutUs/>: <></>}
 
