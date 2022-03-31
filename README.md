@@ -43,6 +43,6 @@ The server (``` main.py ```) for the moment only returns a mock "hello world" me
 ### Docker diagram
 The docker has the following structure:
 
-![DOCKER DIAGRAM](https://user-images.githubusercontent.com/47753346/161059227-d58d13ef-db63-4bbc-af28-2086564ccfbd.jpeg)
 
+![DOCKER DIAGRAM](https://user-images.githubusercontent.com/47753346/161059706-b06bffb8-9fef-4112-8073-e21bffdaa421.jpeg)
 
