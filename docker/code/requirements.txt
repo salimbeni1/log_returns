@@ -1,4 +1,10 @@
 fastapi
 uvicorn
 httpx
+pandas
+numpy
+networkx
+parquet
+pyarrow
+fastparquet
 
