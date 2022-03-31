@@ -39,3 +39,10 @@ Now edit the path before the ``` ':' ``` character with your specific path, for 
 Now, once you run ``` docker-compose up ``` and select the docker's command line you should be able to see all files in your ``` ~/my/path/to/data ``` directory in the ```/code/DATA/``` directory of your docker. 
 
 The server (``` main.py ```) for the moment only returns a mock "hello world" message.
+
+### Docker diagram
+The docker has the following structure:
+
+![DOCKER DIAGRAM](https://user-images.githubusercontent.com/47753346/161059227-d58d13ef-db63-4bbc-af28-2086564ccfbd.jpeg)
+
+
