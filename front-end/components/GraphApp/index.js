@@ -8,7 +8,7 @@ import styles from './GraphApp.module.scss'
 
 import {useEffect, useRef , useState} from 'react'
 
-import label_0 from '../../dataG/label_0.json'
+
 import label_1000 from '../../dataG/label_1000.json'
 import label_2000 from '../../dataG/label_2000.json'
 import label_3000 from '../../dataG/label_3000.json'
@@ -16,6 +16,7 @@ import label_4000 from '../../dataG/label_4000.json'
 import label_5000 from '../../dataG/label_5000.json'
 import label_6000 from '../../dataG/label_6000.json'
 import label_7000 from '../../dataG/label_7000.json'
+import label_8000 from '../../dataG/label_8000.json'
 
 import { FaPlay , FaStop } from 'react-icons/fa';
 
@@ -59,7 +60,7 @@ export default function GraphApp() {
       {node: {id:"XXX" , label: "fake_node_2"} , value: 9.83} ]
   });
 
-  const arr_elements = [ label_0,label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000 ]
+  const arr_elements = [ label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000, label_8000 ]
 
 
   var myInterval = null
@@ -90,7 +91,7 @@ export default function GraphApp() {
             'opacity' : (e)=>{ 
             let max = 2.0
             let min = 1.3
-            return Math.min(1, Math.max(0, (e.data("value")-min)/(max-min)))
+            return 0.5-(Math.min(1, Math.max(0, (e.data("value")-min)/(max-min))))*1000
             }
           }
         },
@@ -105,7 +106,7 @@ export default function GraphApp() {
       ],
       layout: cola_layout,
       
-      zoom: 0.24,
+      zoom: 0.18,
       pan: { x: 300, y: 240 },
 
     });
