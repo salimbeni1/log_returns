@@ -45,9 +45,7 @@ export default function GraphApp() {
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
     label: "SELECT A NODE",
-    edges: [ 
-      {node: {id:"XXX" , label: "fake_node_1"} , value: 0.14} ,
-      {node: {id:"XXX" , label: "fake_node_2"} , value: 9.83} ]
+    edges: [ ]
   });
 
   const [selected_node_values_oder, setSelected_node_values_oder] = useState("default") 
@@ -222,13 +220,18 @@ export default function GraphApp() {
         
           <div className={styles.orderBar}>
             order by : 
-            <FaSortAmountUp onClick={ (e) => {
-              update_selected_node(selected_node.id , "UP")
-            }}/> 
-            <FaSortAmountDownAlt onClick={ (e) => {
+
+            <FaSortAmountUp style={ selected_node_values_oder === "UP" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+             onClick={ (e) => {
+                update_selected_node(selected_node.id , "UP")
+            }}/>
+            
+            <FaSortAmountDownAlt style={ selected_node_values_oder === "DOWN" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+            onClick={ (e) => {
               update_selected_node(selected_node.id , "DOWN")
             }}/>
-            <FaIndustry onClick={ (e) => {
+            <FaIndustry style={ selected_node_values_oder === "SECTOR" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+            onClick={ (e) => {
               update_selected_node(selected_node.id , "SECTOR")
             }}/>
           </div>
