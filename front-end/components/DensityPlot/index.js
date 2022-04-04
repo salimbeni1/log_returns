@@ -22,13 +22,16 @@ export default function DensityPlot (props) {
     }
 
     const ref = useRef()
+    const parentRef = useRef()
     useEffect(() => {
     
         const svgElement = d3.select(ref.current)
         svgElement.selectAll("*").remove()
 
-        const margin = {top: 0, right: 0, bottom: 0, left: 0}
-        const width = 350 - margin.left - margin.right
+
+        console.log(parentRef.current.offsetWidth)
+        const margin = {top: 0, right: 10, bottom: 0, left: 10}
+        const width = parentRef.current.offsetWidth - margin.left - margin.right
         const height = 100 - margin.top - margin.bottom
 
         svgElement
@@ -64,9 +67,13 @@ export default function DensityPlot (props) {
 
 
     return (
-      <svg
-        ref={ref}
-      />
+
+        <div ref={parentRef} style={{width:"100%"}}>
+            <svg
+                ref={ref}
+            />
+        </div>
+      
     )
 
   }
