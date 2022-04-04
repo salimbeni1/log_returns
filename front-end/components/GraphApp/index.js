@@ -9,6 +9,8 @@ import styles from './GraphApp.module.scss'
 import {useEffect, useRef , useState} from 'react'
 
 
+
+
 import label_1000 from '../../dataG/label_1000.json'
 import label_2000 from '../../dataG/label_2000.json'
 import label_3000 from '../../dataG/label_3000.json'
@@ -19,6 +21,7 @@ import label_7000 from '../../dataG/label_7000.json'
 import label_8000 from '../../dataG/label_8000.json'
 
 import { FaPlay , FaStop , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
+import DensityPlot from '../DensityPlot';
 
 
 cytoscape.use( d3Force );
@@ -212,7 +215,9 @@ export default function GraphApp() {
           Asset : {selected_node.label}
         </h1>
 
+        <h3>values per asset</h3>
         <div className={styles.nodeEdgeValues} >
+        
           <div className={styles.orderBar}>
             order by : 
             <FaSortAmountUp onClick={ (e) => {
@@ -230,6 +235,11 @@ export default function GraphApp() {
             {selected_node.edges.map( (e,idx) => <p key={idx}> {e.node.label} {e.value}</p>)}
           </div>
         </div>
+
+        <h3>values distribution</h3>
+        <DensityPlot data={selected_node.edges.map(e => e.value)} />
+        
+
         </> : <h1>Click on a Node to get more information</h1>
       }
         
