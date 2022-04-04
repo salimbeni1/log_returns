@@ -182,6 +182,8 @@ export default function GraphApp() {
       }
       });
 
+    console.log(cy.current.edges("[value]").map(e => e.data("value")));
+
 
     return () => {}
   }, [])
@@ -237,7 +239,10 @@ export default function GraphApp() {
         </div>
 
         <h3>values distribution</h3>
-        <DensityPlot data={selected_node.edges.map(e => e.value)} />
+        <DensityPlot 
+          data={selected_node.edges.map(e => e.value)}
+          dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
+         />
         
 
         </> : <h1>Click on a Node to get more information</h1>
