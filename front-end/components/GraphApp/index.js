@@ -18,30 +18,13 @@ import label_6000 from '../../dataG/label_6000.json'
 import label_7000 from '../../dataG/label_7000.json'
 import label_8000 from '../../dataG/label_8000.json'
 
-import { FaPlay , FaStop } from 'react-icons/fa';
+import { FaPlay , FaStop , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 
 
 cytoscape.use( d3Force );
 cytoscape.use( cola );
 cytoscape.use(popper);
 
-const getRandomElement = (N) => {
-
-  var elements = []
-
-    for (let i = 1; i < N; i++) {
-      elements.push({  id: 'a'+i  ,data: { id: 'a'+i  , label: 'Node '+i } })
-    }
-    for (let i = 1; i < N; i++) {
-      for (let j = 1; j < N; j++) {
-        if(Math.floor((Math.random() * 50)**2) === 1) 
-          elements.push({ id: ''+i+''+j,data: { id: ''+i+''+j,  source: 'a'+i, target: 'a'+j , value: i} })
-      }
-    }
-
-    return elements
-
-}
 
 
 export default function GraphApp() {
@@ -51,6 +34,10 @@ export default function GraphApp() {
 
   const cnt_arr_el = useRef(0)
 
+  const [playButton, setPlayButton] = useState(true)
+  const myInterval = useRef(null)
+
+  const arr_elements = [ label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000, label_8000 ]
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -60,10 +47,8 @@ export default function GraphApp() {
       {node: {id:"XXX" , label: "fake_node_2"} , value: 9.83} ]
   });
 
-  const arr_elements = [ label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000, label_8000 ]
+  const [selected_node_values_oder, setSelected_node_values_oder] = useState("default") 
 
-
-  var myInterval = null
 
   const cola_layout = {
     name: 'cola',
@@ -75,6 +60,58 @@ export default function GraphApp() {
 
   }
 
+  // update selected node state and fetch node edge values
+  const update_selected_node = (id , oder) => {
+    if(id === "XXX") return;
+    setSelected_node_values_oder(oder)
+    const map_values_id = (node_) => (el) => {
+      const n_id =  el.data("target") === node_.data("id") ? el.data("source") : el.data("target")
+      return {
+        value :  el.data("value"),
+        node : {
+          id: n_id,
+          label: cy.current.$('#'+n_id).data("label"),
+        } 
+      }
+    }
+    const oder_selected_node_values = ( edges , order ) => {
+      switch (order) {      
+          case "UP":
+            return edges.sort(function(a, b){return b.value - a.value});
+            break;
+  
+          case "DOWN":
+            return edges.sort(function(b, a){return b.value - a.value});
+            break;
+  
+          case "SECTOR":
+            return edges
+            break;
+  
+          default:
+            return edges
+      } 
+    }
+    const clicked_node = cy.current.$('#'+id)
+    setSelected_node({
+      id : clicked_node.data("id"),
+      label: clicked_node.data("label"),
+      edges: oder_selected_node_values(
+        clicked_node.connectedEdges().map( map_values_id(clicked_node) ),
+        oder
+        )
+    })
+
+  }
+
+  // load next graph layout and update related states
+  const next_graph_iteration = () =>{
+    cy.current.json({elements:arr_elements[ cnt_arr_el.current % 8 ]})
+    ly.current = cy.current.layout(cola_layout)
+    ly.current.run()
+    cnt_arr_el.current += 1;
+    update_selected_node(selected_node.id , selected_node_values_oder)
+  }
 
 
   useEffect(() => {
@@ -114,34 +151,13 @@ export default function GraphApp() {
     
 
     cy.current.on('tap','edge', function(e){
-      console.log(e.target.data())
+      // tap edge event : console.log(e.target.data())
     })
     cy.current.on('tap','node', function(e){
-      console.log(e.target.data())
-
-      const map_values_id = (el) => {
-
-        console.log( el.data() );
-
-        const n_id =  el.data("target") === e.target.data("id") ? el.data("source") : el.data("target")
-        
-        return {
-          value :  el.data("value"),
-          node : {
-            id: n_id,
-            label: cy.current.$('#'+n_id).data("label"),
-          } 
-        }
-      }
-
-      const id_values = e.target.connectedEdges().map( map_values_id )
-
-      setSelected_node({
-        id : e.target.data("id"),
-        label: e.target.data("label"),
-        edges: id_values
-      })
+      // tap node event : console.log(e.target.data())
+      update_selected_node(e.target.data("id"))
     })
+
 
     cy.current.on('mouseover','node', function(event){
       event.target.popperRefObj = event.target.popper({
@@ -163,22 +179,9 @@ export default function GraphApp() {
       }
       });
 
-    
-
 
     return () => {}
   }, [])
-
-
-  const updateRandomGraph = () =>{
-    cy.current.json({elements:arr_elements[ cnt_arr_el.current % 8 ]})
-    ly.current = cy.current.layout(cola_layout)
-    ly.current.run()
-
-    cnt_arr_el.current += 1;
-  }
- 
-
 
 
   return (
@@ -188,16 +191,12 @@ export default function GraphApp() {
       
 
       <div className={styles.navbar}>
-            
-          <FaPlay onClick={ e => {
-              myInterval = setInterval(updateRandomGraph, 2000)}
-          }/>
 
-          <FaStop onClick={ e => {
-                console.log("clear interval");
-                clearInterval(myInterval)
-          }}/>
-
+          {playButton ? 
+          <FaPlay onClick={ e => {myInterval.current = setInterval(next_graph_iteration, 2000);setPlayButton(false)}}/>:
+          <FaStop onClick={ e => {clearInterval(myInterval.current) ; setPlayButton(true)}}/>
+          }
+          
           <div className={styles.bar} ></div>
            
       </div>
@@ -210,14 +209,26 @@ export default function GraphApp() {
       {selected_node.label !== "SELECT A NODE" ?<>
 
         <h1>
-          Node : {selected_node.label}
+          Asset : {selected_node.label}
         </h1>
-        <h2>
-          Id : {selected_node.id}
-        </h2>
 
-        <div style={{overflow:"scroll" , height:"400px"}}>
-          {selected_node.edges.map( (e,idx) => <p key={idx}> {e.node.label} {e.value}</p>)}
+        <div className={styles.nodeEdgeValues} >
+          <div className={styles.orderBar}>
+            order by : 
+            <FaSortAmountUp onClick={ (e) => {
+              update_selected_node(selected_node.id , "UP")
+            }}/> 
+            <FaSortAmountDownAlt onClick={ (e) => {
+              update_selected_node(selected_node.id , "DOWN")
+            }}/>
+            <FaIndustry onClick={ (e) => {
+              update_selected_node(selected_node.id , "SECTOR")
+            }}/>
+          </div>
+
+          <div className={styles.edgeTable}>
+            {selected_node.edges.map( (e,idx) => <p key={idx}> {e.node.label} {e.value}</p>)}
+          </div>
         </div>
         </> : <h1>Click on a Node to get more information</h1>
       }
