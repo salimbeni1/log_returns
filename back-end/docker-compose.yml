@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  web:
+    build: ./server
+    ports:
+      - "8000:5000"
+    volumes:
+      - ~/Documents/DATA_VIZ_DATA:/back-end/server/data/:ro 

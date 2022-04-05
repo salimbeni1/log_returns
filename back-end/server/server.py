@@ -6,7 +6,8 @@ app = fastapi.FastAPI()
 
 @app.get('/')
 def index():
-    df = helper.load_clean_data('/code/DATA/us_equities_logreturns.parquet')
+    # path for shared parquet file in docker image: 'back-end/server/data/us_equities_logreturns.parquet'
+    df = helper.load_clean_data( '/back-end/server/data/us_equities_logreturns.parquet' )
     c_df = helper.get_correlation(df, 0,1000) # !! if interval to small result in nan value
     d_df = helper.get_distance(c_df)
     final_dict = helper.generate_dict(d_df, percentage_keep_=0.3)
