@@ -37,8 +37,8 @@ yarn dev
 ## Back-end
 
 ```
-cd front-end
-python3 main.py
+cd back-end
+docker compose up
 ```
 
 ## Docker
