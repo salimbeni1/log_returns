@@ -5,4 +5,4 @@ services:
     ports:
       - "8000:5000"
     volumes:
-      - ~/Documents/DATA_VIZ_DATA:/back-end/server/data/:ro 
+      - ./data/:/back-end/server/data/:ro 
