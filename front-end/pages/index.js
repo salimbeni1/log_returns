@@ -7,5 +7,5 @@ import ConnectedGraphApp from '../components/ConnectedGraphApp'
 
 
 export default function Home() {
-  return  <GraphApp/>
+  return  <ConnectedGraphApp/>
 }

@@ -43,28 +43,20 @@ const getRandomElement = (N) => {
 
 }
 
-function load_jsons() {
+//   /* LOAD DATA */
+// function load_data_from_server_2() {
+    
+//   axios.get(`http://127.0.0.1:8000/correlation/1:1000/0.2`).then(jsons => {
+//     console.log(" *************** DATA *************** ")
+//     console.log(jsons.data)
+//     setJsons(jsons.data)
+//     jsons.data
+//   }).catch(err => console.log(err))
+// }
+// load_data_from_server_2()
 
-  console.log("--------------------------------- ENTRANCE ---------------------------------")
-  
-  axios.get("http://127.0.0.1:8000") // test - https://jsonplaceholder.typicode.com/users` | 127.0.0.1
-  .then(res => {
-    console.log("--------------------------- QUERY RESULT INDEX PAGE ---------------------------")
-    console.log(res.data)
-    axios.get(`http://127.0.0.1:8000/correlation/1:1000/0.2`)
-    .then(res_json => {
-      console.log("--------------------- JSON RESULT ---------------------")
-      console.log(res_json.data)
-      console.log("--------------------------------- EXIT ---------------------------------")
-    })
-  },
-  err => console.log(err)
-  )
-}
 
 export default function ConnectedGraphApp() {
-
-  load_jsons() // NOTE
 
   const cy = useRef(null)
   const ly = useRef(null)
@@ -72,7 +64,6 @@ export default function ConnectedGraphApp() {
   const cnt_arr_el = useRef(0)
 
   const [serverUrl, setServerUrl] = useState("http://localhost:8080")
-
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -82,8 +73,24 @@ export default function ConnectedGraphApp() {
       {node: {id:"XXX" , label: "fake_node_2"} , value: 9.83} ]
   });
 
-  const arr_elements = [ label_0,label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000 ]
 
+  const [jsonsData, setJsonsData] = useState( { } )
+      /* LOAD DATA */
+  function load_data_from_server() { 
+    axios.get(`http://127.0.0.1:8000/correlation/1:1000/0.2`).then(jsons => {
+      console.log(" *************** DATA *************** ")
+      console.log(jsons.data)
+      setJsonsData(jsons.data)
+      jsons.data
+    }).catch(err => {
+      console.log(" NETWORK ERROR ")
+      console.log(err)
+    })
+  }
+  console.log(" json data recieved from server ")
+  console.log(jsonsData)
+
+  const arr_elements = [ label_0,label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000 ]
 
   var myInterval = null
 
@@ -97,10 +104,9 @@ export default function ConnectedGraphApp() {
 
   }
 
-
-
   useEffect(() => {
 
+    load_data_from_server()
     const elements= arr_elements[cnt_arr_el.current]
 
     cy.current = cytoscape({
@@ -245,7 +251,12 @@ export default function ConnectedGraphApp() {
         <div style={{overflow:"scroll" , height:"400px"}}>
           {selected_node.edges.map( (e,idx) => <p key={idx}> {e.node.label} {e.value}</p>)}
         </div>
-        </> : <h1>Click on a Node to get more information</h1>
+        </> : 
+        <>
+          <h1>Click on a Node to get more information</h1>
+          <button onClick={() => load_data_from_server()}> LOAD DATA FROM SERVER </button>
+        </>
+        
       }
         
 
