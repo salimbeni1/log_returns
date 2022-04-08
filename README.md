@@ -1,26 +1,47 @@
-# log_returns
+# log_returns  📈
+
+### Team
+| Student's name | SCIPER |
+| -------------- | ------ |
+| Etienne Salimbeni |  | 
+| Carlo Musso | 283736 |
+| Filippo Salmina | 289092 |
+
+### Context 
+Correlation between stock prices gives powerful insights into the evolution of financial systems in interesting periods: during a financial crisis, political instability, or significant economic development of a country. Correlation tells us a lot about how stocks are linked, such as how industries are dependent on or independent of crisis or development in specific economic sectors. 
+The goal of this visualization is to represent the evolution in time of correlation, hierarchies and clustering of various financial stocks.
+
+### GitHub repository
+**Note** - this private repository will be updated from time to time, specifically for each Milestone. The actual repository of continuous deployment had to be public for practical reasons. The public repository **log_returns** can be found [here](https://github.com/salimbeni1/log_returns)
+
+### Visualization
+The web visualization we are currently working on can be found [here](https://log-returns.vercel.app).
+
+## Milestone 1
+
+Download [Milestone 1.pdf](https://github.com/com-480-data-visualization/datavis-project-2022-avanturiais_/files/8449218/Team.AvanTuRiais.-.Milestone.1.pdf) or view it in the ```/milestones/``` [directory](https://github.com/com-480-data-visualization/datavis-project-2022-avanturiais_/tree/main/milestones) on this repository.
 
 
-# dependencies
+## Dependencies
 
 yarn (a js packet manager)
 
 
-# Front-End
+## Front-End
 
 ```
 cd front-end
 yarn dev
 ```
 
-# Back-end
+## Back-end
 
 ```
-cd back-end
-docker compose up
+cd front-end
+python3 main.py
 ```
 
-# Docker
+## Docker
 To build and launch the python-FastAPI docker navigate to the ``` docker > code ``` directory in the command line and run the command: \
 ``` docker-compose up ```
 
