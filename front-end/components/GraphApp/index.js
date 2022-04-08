@@ -10,16 +10,24 @@ import {useEffect, useRef , useState} from 'react'
 
 
 
-
-import label_1000 from '../../dataG/label_1000.json'
-import label_2000 from '../../dataG/label_2000.json'
-import label_3000 from '../../dataG/label_3000.json'
-import label_4000 from '../../dataG/label_4000.json'
-import label_5000 from '../../dataG/label_5000.json'
-import label_6000 from '../../dataG/label_6000.json'
-import label_7000 from '../../dataG/label_7000.json'
-import label_8000 from '../../dataG/label_8000.json'
-
+///* 
+import label_1 from '../../data/MST/idx=4100.json'
+import label_2 from '../../data/MST/idx=5000.json'
+import label_3 from '../../data/MST/idx=6000.json'
+import label_4 from '../../data/MST/idx=7000.json'
+import label_5 from '../../data/MST/idx=8000.json'
+import label_6 from '../../data/MST/idx=9000.json'
+import label_7 from '../../data/MST/idx=10000.json'
+//*/
+/* 
+import label_1 from '../../data/PHY/idx=4100.json'
+import label_2 from '../../data/PHY/idx=5000.json'
+import label_3 from '../../data/PHY/idx=6000.json'
+import label_4 from '../../data/PHY/idx=7000.json'
+import label_5 from '../../data/PHY/idx=8000.json'
+import label_6 from '../../data/PHY/idx=9000.json'
+import label_7 from '../../data/PHY/idx=10000.json'
+*/
 import { FaPlay , FaStop , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 import DensityPlot from '../DensityPlot';
 
@@ -40,7 +48,14 @@ export default function GraphApp() {
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
-  const arr_elements = [ label_1000,label_2000,label_3000,label_4000,label_5000,label_6000,label_7000, label_8000 ]
+  const arr_elements = [ 
+    label_1,
+    label_2,
+    label_3,
+    label_4,
+    label_5,
+    label_6,
+    label_7]
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
