@@ -19,6 +19,7 @@ import label_7000 from '../../dataG/label_7000.json'
 
 import { FaPlay , FaStop } from 'react-icons/fa';
 
+import axios from 'axios';
 
 cytoscape.use( d3Force );
 cytoscape.use( cola );
@@ -42,8 +43,28 @@ const getRandomElement = (N) => {
 
 }
 
+function load_jsons() {
+
+  console.log("--------------------------------- ENTRANCE ---------------------------------")
+  
+  axios.get("http://127.0.0.1:8000") // test - https://jsonplaceholder.typicode.com/users` | 127.0.0.1
+  .then(res => {
+    console.log("--------------------------- QUERY RESULT INDEX PAGE ---------------------------")
+    console.log(res.data)
+    axios.get(`http://127.0.0.1:8000/correlation/1:1000/0.2`)
+    .then(res_json => {
+      console.log("--------------------- JSON RESULT ---------------------")
+      console.log(res_json.data)
+      console.log("--------------------------------- EXIT ---------------------------------")
+    })
+  },
+  err => console.log(err)
+  )
+}
 
 export default function ConnectedGraphApp() {
+
+  load_jsons() // NOTE
 
   const cy = useRef(null)
   const ly = useRef(null)

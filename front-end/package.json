@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "cytoscape": "^3.21.0",
     "cytoscape-cola": "^2.5.1",
     "cytoscape-d3-force": "^1.1.4",
