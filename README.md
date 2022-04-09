@@ -42,24 +42,22 @@ docker compose up
 ```
 
 ## Docker
-To build and launch the python-FastAPI docker navigate to the ``` docker > code ``` directory in the command line and run the command: \
+To build and launch the python-FastAPI docker navigate to the ``` back-end ``` directory in the command line and run the command: \
 ``` docker-compose up ```
 
 ### Note 
-The docker contains a server file (``` main.py ```) and the possibility to access a DATA folder on the host computer (in order to avoid to copy a heavy DATA file to the docker each time it runs). In order to set the source path of the data directory open the ```docker-compose.yml``` file and select the line of code:
+The docker contains a server file (``` server.py ```) and the possibility to access a DATA folder on the host computer (in order to avoid to copy a heavy DATA file to the docker each time it runs). In order to set the source path of the data directory open the ```docker-compose.yml``` file and select the line of code:
 ```
     volumes:
-      - ~/Documents/DATA_VIZ_DATA:/code/DATA/:ro 
+      - ~/Documents/DATA_VIZ_DATA:/back-end/server/data/:ro 
 ```
 Now edit the path before the ``` ':' ``` character with your specific path, for example:
 ```
     volumes:
-      - ~/my/path/to/data:/code/DATA/:ro 
+      - ~/my/path/to/data://back-end/server/data/:ro 
 ```
 
-Now, once you run ``` docker-compose up ``` and select the docker's command line you should be able to see all files in your ``` ~/my/path/to/data ``` directory in the ```/code/DATA/``` directory of your docker. 
-
-The server (``` main.py ```) for the moment only returns a mock "hello world" message.
+Now, once you run ``` docker-compose up ``` and select the docker's command line you should be able to see all files in your ``` ~/my/path/to/data ``` directory in the ```/back-end/server/data/ ``` directory of your docker. 
 
 ### Docker diagram
 The docker has the following structure:
