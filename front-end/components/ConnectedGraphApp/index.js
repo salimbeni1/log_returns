@@ -53,9 +53,13 @@ export default function ConnectedGraphApp() {
   const [serverUrl, setServerUrl] = useState("http://127.0.0.1:8000")
   const [jsonsData, setJsonsData] = useState( { } )
 
+  /* data window variables */
+  const [dataFrom, setDataFrom] = useState( 1 )
+  const [dataTo, setDataTo] = useState( 2000 )
+
   /* LOAD DATA FROM SERVER */
   function load_data_from_server() { 
-    axios.get(serverUrl + `/correlation/1:8000/0.2`).then(jsons => {
+    axios.get(serverUrl + `/correlation/${dataFrom}:${dataTo}/0.5`).then(jsons => {
       console.log(" FETCH COMPLETED ")
       setJsonsData(jsons.data)
       jsons.data
@@ -219,7 +223,11 @@ export default function ConnectedGraphApp() {
       
     <div id="serverUrl" className={styles.serverUrl}>
         <h3>Enter server url</h3> 
-        <input type="text" value={serverUrl} onChange={(e) => setServerUrl(e.target.value)}></input>  
+        <input type="text" value={serverUrl} onChange={(e) => setServerUrl(e.target.value)}></input>
+        <text> . </text>  
+        <text> Select the data interval below: </text>
+        <input type="number" value={dataFrom} onChange={(dF) => setDataFrom(dF.target.value)}></input> 
+        <input type="number" value={dataTo} onChange={(dT) => setDataTo(dT.target.value)}></input>   
         <button onClick={(e) => {
           document.getElementById('serverUrl').style.display = "none"
           load_data_from_server()
