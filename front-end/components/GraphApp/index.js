@@ -6,7 +6,7 @@ import popper from "cytoscape-popper";
 
 import styles from './GraphApp.module.scss'
 
-import {useEffect, useRef , useState} from 'react'
+import {useCallback, useEffect, useRef , useState} from 'react'
 
 
 
@@ -19,17 +19,19 @@ import label_5 from '../../data/MST/idx=8000.json'
 import label_6 from '../../data/MST/idx=9000.json'
 import label_7 from '../../data/MST/idx=10000.json'
 //*/
-/* 
-import label_1 from '../../data/PHY/idx=4100.json'
-import label_2 from '../../data/PHY/idx=5000.json'
-import label_3 from '../../data/PHY/idx=6000.json'
-import label_4 from '../../data/PHY/idx=7000.json'
-import label_5 from '../../data/PHY/idx=8000.json'
-import label_6 from '../../data/PHY/idx=9000.json'
-import label_7 from '../../data/PHY/idx=10000.json'
-*/
-import { FaPlay , FaStop , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
+
+import label0_1 from '../../data/PHY/idx=4100.json'
+import label0_2 from '../../data/PHY/idx=5000.json'
+import label0_3 from '../../data/PHY/idx=6000.json'
+import label0_4 from '../../data/PHY/idx=7000.json'
+import label0_5 from '../../data/PHY/idx=8000.json'
+import label0_6 from '../../data/PHY/idx=9000.json'
+import label0_7 from '../../data/PHY/idx=10000.json'
+
+
+import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 import DensityPlot from '../DensityPlot';
+import useInterval from '../../utils/useInterval';
 
 
 cytoscape.use( d3Force );
@@ -43,12 +45,12 @@ export default function GraphApp() {
   const cy = useRef(null)
   const ly = useRef(null)
 
-  const cnt_arr_el = useRef(0)
+  const [ctn_arr, setCtn_arr] = useState(0)
 
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
-  const arr_elements = [ 
+  const arr_elements_MST = [ 
     label_1,
     label_2,
     label_3,
@@ -56,6 +58,17 @@ export default function GraphApp() {
     label_5,
     label_6,
     label_7]
+
+  const arr_elements_PHY = [ 
+      label0_1,
+      label0_2,
+      label0_3,
+      label0_4,
+      label0_5,
+      label0_6,
+      label0_7]
+
+  const [arr_elements, setArr_elements] = useState(arr_elements_PHY)
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -131,13 +144,23 @@ export default function GraphApp() {
   }
 
   // load next graph layout and update related states
-  const next_graph_iteration = () =>{
-    cy.current.json({elements:arr_elements[ cnt_arr_el.current % 8 ]})
+  const next_graph_iteration = useCallback(() =>{
+    const a = arr_elements[ ctn_arr % 8 ]
+    console.log( ctn_arr);
+    cy.current.json({elements:a})
     ly.current = cy.current.layout(cola_layout)
     ly.current.run()
-    cnt_arr_el.current += 1;
+    setCtn_arr( a => a +1 )
     update_selected_node(selected_node.id , selected_node_values_oder)
-  }
+  },[cy.current,ctn_arr, selected_node,arr_elements,selected_node_values_oder])
+
+  const re_render_graph = useCallback((g) =>{
+    cy.current.json({elements:g[ 0 ]})
+    ly.current = cy.current.layout(cola_layout)
+    ly.current.run()
+    setCtn_arr( 0 )
+    update_selected_node(selected_node.id , selected_node_values_oder)
+  },[selected_node, selected_node_values_oder])
 
   const map_sector_to_color = {
     "Industrials" : "green", 
@@ -156,7 +179,7 @@ export default function GraphApp() {
 
   useEffect(() => {
 
-    const elements= arr_elements[cnt_arr_el.current]
+    const elements= arr_elements[ctn_arr]
 
     cy.current = cytoscape({
       container: document.getElementById('cy'),
@@ -212,11 +235,21 @@ export default function GraphApp() {
   }, [])
 
 
+
+  useInterval(() => {
+        const a = arr_elements[ ctn_arr % 8 ]
+        cy.current.json({elements:a})
+        ly.current = cy.current.layout(cola_layout)
+        ly.current.run()
+        setCtn_arr( a => a +1 )
+        update_selected_node(selected_node.id , selected_node_values_oder)
+  }, playButton ? null : 2000);
+
+
+
+
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
-
-      
-
     
 
       <div id="cy" className={styles.cyDiv}>
@@ -224,10 +257,16 @@ export default function GraphApp() {
 
         <div className={styles.navbar}>
           {playButton ? 
-          <FaPlay onClick={ e => {myInterval.current = setInterval(next_graph_iteration, 2000);setPlayButton(false)}}/>:
-          <FaStop onClick={ e => {clearInterval(myInterval.current) ; setPlayButton(true)}}/>
+          <FaPlay onClick={() => setPlayButton(false)}/>:
+          <FaStop onClick={ e => setPlayButton(true)}/>
           }
-          <div className={styles.bar} ></div>
+          <div className={styles.bar} >
+
+            <div className={styles.pointer } style={{left: ((ctn_arr % 8)/8)*100 +"%"}} > </div>
+            <div className={styles.date} style={{left:"0%"}} >1950</div>
+            <div className={styles.date} style={{left:"50%"}}>2000</div>
+            <div className={styles.date} style={{left:"100%"}}>2020</div>
+          </div>
         </div>
 
         <div className={styles.legend}>
@@ -239,8 +278,23 @@ export default function GraphApp() {
           </div>
 
         <div className={styles.layouts}>
-          <button> MST </button>
-          <button> PHY </button>
+
+          <div className={styles.btn} onClick={ (e) => {
+            setArr_elements(arr_elements_MST)
+            re_render_graph(arr_elements_MST)
+          }}>
+             <FaTree/>
+              <p>MST</p>
+          </div>
+          
+          <div className={styles.btn} onClick={ (e) => {
+            setArr_elements(arr_elements_PHY)
+            re_render_graph(arr_elements_PHY)
+          }} >
+              <FaTablets/>
+              <p>PHY</p>
+          </div>
+          
         </div>
 
       </div>
