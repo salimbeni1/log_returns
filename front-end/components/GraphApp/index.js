@@ -82,11 +82,13 @@ export default function GraphApp() {
     setSelected_node_values_oder(oder)
     const map_values_id = (node_) => (el) => {
       const n_id =  el.data("target") === node_.data("id") ? el.data("source") : el.data("target")
+      const curr_n = cy.current.$('#'+n_id)
       return {
         value :  el.data("value"),
         node : {
           id: n_id,
-          label: cy.current.$('#'+n_id).data("label"),
+          label: curr_n.data("label"),
+          sector : curr_n.data("sector"),
         } 
       }
     }
@@ -101,7 +103,14 @@ export default function GraphApp() {
             break;
   
           case "SECTOR":
-            return edges
+            return edges.sort(function(a, b){
+              var nameA = a.node.sector.toLowerCase(), nameB = b.node.sector.toLowerCase();
+              if (nameA < nameB) //sort string ascending
+               return -1;
+              if (nameA > nameB)
+               return 1;
+              return 0; //default return value (no sorting)
+            });
             break;
   
           default:
@@ -112,6 +121,7 @@ export default function GraphApp() {
     setSelected_node({
       id : clicked_node.data("id"),
       label: clicked_node.data("label"),
+      sector:  clicked_node.data("sector"),
       edges: oder_selected_node_values(
         clicked_node.connectedEdges().map( map_values_id(clicked_node) ),
         oder
@@ -127,6 +137,20 @@ export default function GraphApp() {
     ly.current.run()
     cnt_arr_el.current += 1;
     update_selected_node(selected_node.id , selected_node_values_oder)
+  }
+
+  const map_sector_to_color = {
+    "Industrials" : "green", 
+    "Technology" : "black",
+    "Communication Services" : "red",
+    "Basic Materials" : "blue",
+    "Consumer Defensive" : "violet",
+    "Energy" : "yellow",
+    "Healthcare" : "pink",
+    "Consumer Cyclical" : "grey",
+    "Utilities" : "cyan",
+    "Financial Services" : "magenta",
+    "others" : "orange",
   }
 
 
@@ -151,8 +175,16 @@ export default function GraphApp() {
         {
           selector: 'node',
           style: {
-            'width' : '100px',
-            'height' : '100px'
+            'width' : '220px',
+            'height' : '220px',
+            'label': (e) => e.data("label"),
+            "text-valign" : "center",
+            "text-halign" : "center",
+            "color" : "white",
+            "font-weight" : "800",
+            "font-size" : "50px",
+            "background-color" : (e) => map_sector_to_color[e.data("sector")] ? map_sector_to_color[e.data("sector")] : map_sector_to_color["others"]
+
           }
         }
         
@@ -175,28 +207,6 @@ export default function GraphApp() {
     })
 
 
-    cy.current.on('mouseover','node', function(event){
-      event.target.popperRefObj = event.target.popper({
-        content: () => {
-          let content = document.createElement("div");
-          content.classList.add(styles.popperDiv);
-          content.innerHTML = event.target.data("label");
-          document.body.appendChild(content);
-          return content;
-        },
-      });
-
-    });
-
-    cy.current.on('mouseout','node', function(event){
-      if (event.target.popper) {
-        event.target.popperRefObj.state.elements.popper.remove();
-        event.target.popperRefObj.destroy();
-      }
-      });
-
-    console.log(cy.current.edges("[value]").map(e => e.data("value")));
-
 
     return () => {}
   }, [])
@@ -205,21 +215,34 @@ export default function GraphApp() {
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
 
-
       
 
-      <div className={styles.navbar}>
+    
 
+      <div id="cy" className={styles.cyDiv}>
+
+
+        <div className={styles.navbar}>
           {playButton ? 
           <FaPlay onClick={ e => {myInterval.current = setInterval(next_graph_iteration, 2000);setPlayButton(false)}}/>:
           <FaStop onClick={ e => {clearInterval(myInterval.current) ; setPlayButton(true)}}/>
           }
-          
           <div className={styles.bar} ></div>
-           
-      </div>
+        </div>
 
-      <div id="cy" style={{width:"70%",height:"100%",border:"10px solid black",cursor:"pointer"}}>
+        <div className={styles.legend}>
+          {Object.keys(map_sector_to_color).map( (el , idx) => {
+          return <div key={idx} className={styles.lgditm}>
+             <div className={styles.color} style={{backgroundColor:map_sector_to_color[el]}}></div> 
+             {el}
+            </div> })}
+          </div>
+
+        <div className={styles.layouts}>
+          <button> MST </button>
+          <button> PHY </button>
+        </div>
+
       </div>
       
       <div style={{width:"30%",height:"100%", border:"10px solid black" , padding:"10px"}}>
@@ -229,6 +252,8 @@ export default function GraphApp() {
         <h1>
           Asset : {selected_node.label}
         </h1>
+
+        <p>Sector : {selected_node.sector} </p>
 
         <h3>values per asset</h3>
         <div className={styles.nodeEdgeValues} >
@@ -252,7 +277,7 @@ export default function GraphApp() {
           </div>
 
           <div className={styles.edgeTable}>
-            {selected_node.edges.map( (e,idx) => <p key={idx}> {e.node.label} {e.value}</p>)}
+            {selected_node.edges.map( (e,idx) => <p key={idx} style={{backgroundColor: map_sector_to_color[e.node.sector], color:"white"}}> {e.node.label} {e.value}</p>)}
           </div>
         </div>
 
