@@ -8,9 +8,9 @@ import styles from './GraphApp.module.scss'
 
 import {useCallback, useEffect, useRef , useState} from 'react'
 
+import label_mst from '../../data/MST/MST_100.json'
 
-
-///* 
+/* 
 import label_1 from '../../data/MST/idx=4100.json'
 import label_2 from '../../data/MST/idx=5000.json'
 import label_3 from '../../data/MST/idx=6000.json'
@@ -18,7 +18,7 @@ import label_4 from '../../data/MST/idx=7000.json'
 import label_5 from '../../data/MST/idx=8000.json'
 import label_6 from '../../data/MST/idx=9000.json'
 import label_7 from '../../data/MST/idx=10000.json'
-//*/
+
 
 import label0_1 from '../../data/PHY/idx=4100.json'
 import label0_2 from '../../data/PHY/idx=5000.json'
@@ -27,7 +27,7 @@ import label0_4 from '../../data/PHY/idx=7000.json'
 import label0_5 from '../../data/PHY/idx=8000.json'
 import label0_6 from '../../data/PHY/idx=9000.json'
 import label0_7 from '../../data/PHY/idx=10000.json'
-
+*/
 
 import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 import DensityPlot from '../DensityPlot';
@@ -38,8 +38,6 @@ cytoscape.use( d3Force );
 cytoscape.use( cola );
 cytoscape.use(popper);
 
-
-
 export default function GraphApp() {
 
   const cy = useRef(null)
@@ -49,26 +47,14 @@ export default function GraphApp() {
 
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
+  const [delay, setDelay] = useState(1)
+  const [update, setUpdate] = useState(false)
 
-  const arr_elements_MST = [ 
-    label_1,
-    label_2,
-    label_3,
-    label_4,
-    label_5,
-    label_6,
-    label_7]
+  const arr_elements_MST = label_mst['all']
+  
+  //const arr_elements_PHY = 
 
-  const arr_elements_PHY = [ 
-      label0_1,
-      label0_2,
-      label0_3,
-      label0_4,
-      label0_5,
-      label0_6,
-      label0_7]
-
-  const [arr_elements, setArr_elements] = useState(arr_elements_PHY)
+  const [arr_elements, setArr_elements] = useState(arr_elements_MST)
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -81,13 +67,25 @@ export default function GraphApp() {
 
   const cola_layout = {
     name: 'cola',
-    infinite: true,
+    infinite: false,
     fit: false,
-    centerGraph: true,
-    nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return edge.data("value")*1000 },
+    
+    centerGraph: false,
+    nodeSpacing: function( node ){ return 10; }, // space around node
+    edgeLength:  function( edge ){ return edge.data("value")*2000 },
+    stop: function(){
 
+      setUpdate(true)
+
+    
+}, 
+     
+    maxSimulationTime: 50000, 
+    convergenceThreshold:10000,
+    refresh:1
   }
+
+  
 
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
@@ -145,8 +143,8 @@ export default function GraphApp() {
 
   // load next graph layout and update related states
   const next_graph_iteration = useCallback(() =>{
-    const a = arr_elements[ ctn_arr % 8 ]
-    console.log( ctn_arr);
+    const a = arr_elements[ ctn_arr % 100 ]
+  
     cy.current.json({elements:a})
     ly.current = cy.current.layout(cola_layout)
     ly.current.run()
@@ -178,6 +176,7 @@ export default function GraphApp() {
 
 
   useEffect(() => {
+
 
     const elements= arr_elements[ctn_arr]
 
@@ -219,6 +218,8 @@ export default function GraphApp() {
 
     });
 
+   
+
     
 
     cy.current.on('tap','edge', function(e){
@@ -229,25 +230,31 @@ export default function GraphApp() {
       update_selected_node(e.target.data("id"))
     })
 
-
-
     return () => {}
   }, [])
 
+  
+  useInterval(function(){
 
+        if (update) {
 
-  useInterval(() => {
-        const a = arr_elements[ ctn_arr % 8 ]
+        const a = arr_elements[ ctn_arr % 100 ]
+
         cy.current.json({elements:a})
         ly.current = cy.current.layout(cola_layout)
         ly.current.run()
+        
         setCtn_arr( a => a +1 )
         update_selected_node(selected_node.id , selected_node_values_oder)
-  }, playButton ? null : 2000);
+        setUpdate(false)
+    
+      } else {
+        setDelay(x => x++)
+      }
+      
+  }, playButton ? null:  delay)
 
-
-
-
+  
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
     
@@ -262,7 +269,7 @@ export default function GraphApp() {
           }
           <div className={styles.bar} >
 
-            <div className={styles.pointer } style={{left: ((ctn_arr % 8)/8)*100 +"%"}} > </div>
+            <div className={styles.pointer } style={{left: ((ctn_arr % 100)/100)*100 +"%"}} > </div>
             <div className={styles.date} style={{left:"0%"}} >1950</div>
             <div className={styles.date} style={{left:"50%"}}>2000</div>
             <div className={styles.date} style={{left:"100%"}}>2020</div>
