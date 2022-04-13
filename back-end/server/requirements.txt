@@ -7,4 +7,5 @@ networkx
 parquet
 pyarrow
 fastparquet
+scipy
 

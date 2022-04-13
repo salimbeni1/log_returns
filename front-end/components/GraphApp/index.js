@@ -3,12 +3,13 @@ import cytoscape from 'cytoscape';
 import d3Force from 'cytoscape-d3-force';
 import cola from 'cytoscape-cola';
 import popper from "cytoscape-popper";
-
 import styles from './GraphApp.module.scss'
-
 import {useCallback, useEffect, useRef , useState} from 'react'
+import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 
 import label_mst from '../../data/MST/MST_100.json'
+import DensityPlot from '../DensityPlot';
+import useInterval from '../../utils/useInterval';
 
 /* 
 import label_1 from '../../data/MST/idx=4100.json'
@@ -29,16 +30,14 @@ import label0_6 from '../../data/PHY/idx=9000.json'
 import label0_7 from '../../data/PHY/idx=10000.json'
 */
 
-import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
-import DensityPlot from '../DensityPlot';
-import useInterval from '../../utils/useInterval';
-
-
 cytoscape.use( d3Force );
 cytoscape.use( cola );
 cytoscape.use(popper);
 
-export default function GraphApp() {
+export default function GraphApp( props ) {
+
+  console.log("passed props")
+  console.log(props.json_data)
 
   const cy = useRef(null)
   const ly = useRef(null)
@@ -47,14 +46,11 @@ export default function GraphApp() {
 
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
+
   const [delay, setDelay] = useState(1)
-  const [update, setUpdate] = useState(false)
+  const [update, setUpdate] = useState(false) 
 
-  const arr_elements_MST = label_mst['all']
-  
-  //const arr_elements_PHY = 
-
-  const [arr_elements, setArr_elements] = useState(arr_elements_MST)
+  const [arr_elements, setArr_elements] = useState(props.json_data)
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -74,11 +70,8 @@ export default function GraphApp() {
     nodeSpacing: function( node ){ return 10; }, // space around node
     edgeLength:  function( edge ){ return edge.data("value")*2000 },
     stop: function(){
-
       setUpdate(true)
-
-    
-}, 
+    } , 
      
     maxSimulationTime: 50000, 
     convergenceThreshold:10000,
@@ -128,6 +121,7 @@ export default function GraphApp() {
             return edges
       } 
     }
+
     const clicked_node = cy.current.$('#'+id)
     setSelected_node({
       id : clicked_node.data("id"),
@@ -148,7 +142,7 @@ export default function GraphApp() {
     cy.current.json({elements:a})
     ly.current = cy.current.layout(cola_layout)
     ly.current.run()
-    setCtn_arr( a => a +1 )
+    setCtn_arr( a => a + 1 )
     update_selected_node(selected_node.id , selected_node_values_oder)
   },[cy.current,ctn_arr, selected_node,arr_elements,selected_node_values_oder])
 
@@ -197,8 +191,8 @@ export default function GraphApp() {
         {
           selector: 'node',
           style: {
-            'width' : '220px',
-            'height' : '220px',
+            'width' : '200px',
+            'height' : '200px',
             'label': (e) => e.data("label"),
             "text-valign" : "center",
             "text-halign" : "center",
@@ -358,3 +352,14 @@ export default function GraphApp() {
     </div>
   )
 }
+
+
+const propTypes = {
+  json_data: Array
+};
+
+GraphApp.propTypes = propTypes;
+
+GraphApp.defaultProps = {
+  json_data: label_mst['all']
+};
