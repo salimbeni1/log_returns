@@ -7,75 +7,45 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 import json
 
 
-def load_clean_data(path_):
-    df = pd.read_parquet(path_)
-    print("shape before:", df.shape)
-    df_clean = df.iloc[:,:50]
-    df_clean = df_clean.dropna(axis=0)
-    print("shape after:", df_clean.shape)
-    print("NaN value present ? ",df_clean.isnull().sum().any())
-    return df_clean
+def pd_fill_diagonal(df_, value=0): 
+    mat = df_.values
+    n = mat.shape[0]
+    mat[range(n), range(n)] = value
+    return pd.DataFrame(mat, index=df_.index, columns=df_.columns)
 
+def norm_data(df_):
+    df_ = pd_fill_diagonal(df_, value=df_.mean().mean())
+    
+    X_std = (df_ - df_.min().min()) / (df_.max().max() - df_.min().min())
+    X_scaled = X_std * (2 - 1) + 1
 
-def get_correlation(df_, from_, to_):
-    correlation_df = df_.iloc[from_:to_, :].corr()
-    return correlation_df
+    X_std = pd_fill_diagonal(X_scaled)
+    return X_std
 
 
 def get_distance(df_):
     dist = (2*(1- df_))**(1/2)
     return dist
 
+def get_correlation(df_, from_, to_):
+    df_clean = df_.iloc[from_:to_, :]
+    df_clean = df_clean.dropna(axis=1) 
+    correlation_df = df_clean.corr()
+    if correlation_df.isnull().values.sum() > 0:
+        print("!!!!!!!!!!", from_, to_, correlation_df.isnull().sum())
+    return correlation_df
 
 def get_distance_threshold(df_, percentage_keep_):
     sort_val = np.sort(df_.values.flatten())
-    th = sort_val[int((sort_val.shape[0]-df_.shape[0])*percentage_keep_)+df_.shape[0]] #don't consider diagonal element
+    th = sort_val[int((sort_val.shape[0]-df_.shape[0])*percentage_keep_)+df_.shape[0]-1] #don't consider diagonal element
     return th
 
+def generate_dict_MST(df_, sectors_, DICT_IDX):
 
-def generate_dict_PHY(df_, sector_, percentage_keep_):
-        
-    th = get_distance_threshold(df_, percentage_keep_)
-
-    #create graph
-    G = nx.from_pandas_adjacency(df_)
-    graph_dict = json_graph.node_link_data(G)
-    del graph_dict['directed']
-    del graph_dict['multigraph']
-    del graph_dict['graph']
-    
-    final_dict = dict()
-    ids = dict()
-
-    #nodes
-    list_nodes = []
-    for idx, elm in enumerate(graph_dict['nodes']):
-        list_nodes.append(dict({'data': dict({'id': str(idx), 'label': elm['id'],'sector': sector_[elm['id']]})}))
-        ids[elm['id']] = str(idx)
-    final_dict.update(dict({'nodes':list_nodes}))
-    
-
-    #edges
-    list_edges = []
-    for idx, elm in enumerate(graph_dict['links']):
-        if elm['weight'] < th:
-            list_edges.append(dict({'data': dict(
-                {'id': 'link_'+str(idx),
-                 'source': ids[elm['source']],
-                 'target': ids[elm['target']],
-                 'value': elm['weight'],
-                 })}))     
-    final_dict.update(dict({'edges':list_edges}))
-    return final_dict
-
-def generate_dict_MST(df_, sector_):
-    
     X = csr_matrix(df_.values)
-
-
     Tcsr = minimum_spanning_tree(X)
     df_ = pd.DataFrame( Tcsr.toarray(),index=df_.index, columns=df_.columns)
-
+    
     #create graph
     G = nx.from_pandas_adjacency(df_)
     graph_dict = json_graph.node_link_data(G)
@@ -89,58 +59,71 @@ def generate_dict_MST(df_, sector_):
     #nodes
     list_nodes = []
     for idx, elm in enumerate(graph_dict['nodes']):
-        list_nodes.append(dict({'data': dict({'id': str(idx), 'label': elm['id'],'sector': sector_[elm['id']]})}))
-        ids[elm['id']] = str(idx)
+        list_nodes.append(dict({'data': dict({'id': str(DICT_IDX[elm['id']]), 'label': elm['id'], 'sector': sectors_[elm['id']]})}))
     final_dict.update(dict({'nodes':list_nodes}))
     
 
     #edges
     list_edges = []
     for idx, elm in enumerate(graph_dict['links']):
-        if True:
+        list_edges.append(dict({'data': dict(
+                    {'id': 'link_'+str(idx),
+                     'source': str(DICT_IDX[elm['source']]),
+                     'target':str(DICT_IDX[elm['target']]),
+                     'value': elm['weight']})}))     
+    final_dict.update(dict({'edges':list_edges}))
+    return final_dict
+    
+
+def generate_dict_PHY(df_, sectors_, DICT_IDX):
+
+    th = get_distance_threshold(df_, percentage_keep_=0.05)
+    
+    #create graph
+    G = nx.from_pandas_adjacency(df_)
+    graph_dict = json_graph.node_link_data(G)
+    del graph_dict['directed']
+    del graph_dict['multigraph']
+    del graph_dict['graph']
+    
+    final_dict = dict()
+    ids = dict()
+
+    #nodes
+    list_nodes = []
+    for idx, elm in enumerate(graph_dict['nodes']):
+        list_nodes.append(dict({'data': dict({'id': str(DICT_IDX[elm['id']]), 'label': elm['id'], 'sector': sectors_[elm['id']]})}))
+    final_dict.update(dict({'nodes':list_nodes}))
+    
+
+    #edges
+    list_edges = []
+    for idx, elm in enumerate(graph_dict['links']):
+        if  elm['weight'] < th:
             list_edges.append(dict({'data': dict(
-                {'id': 'link_'+str(idx),
-                 'source': ids[elm['source']],
-                 'target': ids[elm['target']],
-                 'value': elm['weight'],
-                 })}))     
+                    {'id': 'link_'+str(idx),
+                     'source': str(DICT_IDX[elm['source']]),
+                     'target':str(DICT_IDX[elm['target']]),
+                     'value': elm['weight']})}))     
     final_dict.update(dict({'edges':list_edges}))
     return final_dict
 
-def save_json_rolling(df_, sectors_,
-                      start_=1000,
-                      end_=None,
-                      rolling_window_=1000,
-                      step_=100,
-                      percentage_keep_=0.6):
+
+def get_rolling_dict(sectors_, df_, start_, stop_, step_, type_='MST'):
     
-    if end_ == None:
-        end_ = df_.shape[0]
-        
-    if end_ > df_.shape[0]: 
-        print("end_ parameter  to large ")
-        return 0
+    dict_ = []
+    DICT_IDX = {k: v for v, k in enumerate(sectors_)}
     
-    if start_ < rolling_window_: 
-        print("start_ parameter need to be larger then rolling_window_")
-        return 0
-    
-    if percentage_keep_ > 1 or percentage_keep_ <= 0:
-        print("percentage_keep_ parameter need to be between [0, 1]")
-        return 0
-    
-    list_dict = []
-    for i in range(start_,end_, step_):
-        c_df = get_correlation(df_, i-rolling_window_,i) # !! if interval to small result in nan value
-        d_df = get_distance(c_df)
-   
-        # MST or PHY ?? TODO
-        final_dict = generate_dict_MST(d_df, sectors_)
-        #final_dict = generate_dict_PHY(d_df, sectors_, percentage_keep_)
-            
-        list_dict.append(final_dict)
-        
-    return list_dict
+    if (type_ == 'MST'):
+        for i in range(start_, stop_, step_):
+            dict_.append(generate_dict_MST(get_distance(get_correlation(df_, i-1000, i)), sectors_, DICT_IDX))
+    elif (type_ == 'PHY'):
+        for i in range(start_, stop_, step_):
+            dict_.append(generate_dict_PHY(get_distance(get_correlation(df_, i-1000, i)), sectors_, DICT_IDX))
+    else:
+        print("ERROR ON TYPE MST/PHY")
+
+    return dict_
 
 
 

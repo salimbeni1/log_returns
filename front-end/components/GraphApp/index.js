@@ -8,8 +8,7 @@ import styles from './GraphApp.module.scss'
 import {useCallback, useEffect, useRef , useState} from 'react'
 import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 
-import label_mst from '../../data/MST/MST_100.json'
-// import label_phy from '../../data/PHY/PHY_100.json'
+import label_mst from '../../public/data/MST/MST_100.json'
 
 import DensityPlot from '../DensityPlot';
 import useInterval from '../../utils/useInterval';
@@ -18,6 +17,7 @@ import useInterval from '../../utils/useInterval';
 cytoscape.use( d3Force );
 cytoscape.use( cola );
 cytoscape.use(popper);
+
 
 export default function GraphApp( props ) {
 
@@ -29,16 +29,10 @@ export default function GraphApp( props ) {
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
-
-  const arr_elements_MST = label_mst['all']
-  
-  // const arr_elements_PHY = label_phy['all']
-
   const [delay, setDelay] = useState(1)
   const [update, setUpdate] = useState(false) 
 
-
-  const [arr_elements, setArr_elements] = useState(props.json_data)
+  const [arr_elements, setArr_elements] = useState(props.json_data['all'])
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -69,7 +63,7 @@ export default function GraphApp( props ) {
   const update_new_slider_pos = (event) =>{
     
     setCtn_arr(event.target.value)
-    const a = arr_elements[ ctn_arr % 100 ]
+    const a = arr_elements[ ctn_arr % arr_elements.length]
     cy.current.json({elements:a})
     ly.current = cy.current.layout(cola_layout)
     ly.current.run()
@@ -137,7 +131,7 @@ export default function GraphApp( props ) {
 
   // load next graph layout and update related states
   const next_graph_iteration = useCallback(() =>{
-    const a = arr_elements[ ctn_arr % 100 ]
+    const a = arr_elements[ ctn_arr % arr_elements.length ]
   
     cy.current.json({elements:a})
     ly.current = cy.current.layout(cola_layout)
@@ -228,7 +222,7 @@ export default function GraphApp( props ) {
 
         if (update) {
 
-        const a = arr_elements[ ctn_arr % 100 ]
+        const a = arr_elements[ ctn_arr % arr_elements.length ]
 
         cy.current.json({elements:a})
         ly.current = cy.current.layout(cola_layout)
@@ -264,16 +258,28 @@ export default function GraphApp( props ) {
         <div className={styles.layouts}>
 
           <div className={styles.btn} onClick={ (e) => {
-            setArr_elements(arr_elements_MST)
-            re_render_graph(arr_elements_MST)
-          }}>
+              if (props.reload_data === undefined) {
+                setArr_elements(label_mst['all'])
+                re_render_graph(label_mst['all'])
+              } else {
+                props.reload_data('MST')
+              }
+            
+            }
+          }>
              <FaTree/>
               <p>MST</p>
           </div>
           
           <div className={styles.btn} onClick={ (e) => {
-            setArr_elements(arr_elements_PHY)
-            re_render_graph(arr_elements_PHY)
+            if (props.reload_data === undefined) {
+              console.log(" NOT IMPLEMENTED YET !!! ")
+              // setArr_elements(label_phy['all'])
+              // re_render_graph(label_phy['all'])
+            } else {
+              props.reload_data('PHY')
+            }
+            
           }} >
               <FaTablets/>
               <p>PHY</p>
@@ -351,11 +357,13 @@ export default function GraphApp( props ) {
 
 
 const propTypes = {
-  json_data: Array
-};
+  json_data: Object,
+  reload_data: Function
+}; 
 
 GraphApp.propTypes = propTypes;
 
 GraphApp.defaultProps = {
-  json_data: label_mst['all']
+  json_data: label_mst,
+  reload_data: undefined
 };

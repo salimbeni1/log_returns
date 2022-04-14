@@ -2,6 +2,7 @@ import fastapi
 import uvicorn
 import helper
 import json
+import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware
 
 app = fastapi.FastAPI()
@@ -16,17 +17,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+with open('./sector.json') as sectors:
+    sector_json = json.load(sectors)
     
-@app.get('/')
-def correlation():
+df = pd.read_parquet( '/back-end/server/data/us_equities_logreturns.parquet')
+          
+@app.get('/mst')
+def mst():  
+    
+    dict_list_MST = helper.get_rolling_dict(sector_json, df, 4100, 10100, 100, 'MST') #df.shape[0]
+    
+    json_data = {"all": dict_list_MST}
+    return json_data
 
-    with open('./sector.json') as sectors:
-        sector_json = json.load(sectors)
-        
-    df = helper.load_clean_data( '/back-end/server/data/us_equities_logreturns.parquet' )
-    dict_list = helper.save_json_rolling(df, sector_json, start_=4100, end_= None, rolling_window_=1000, step_=100)
+@app.get('/phy')
+def phy():
     
-    json_data = {"all": dict_list}
+    dict_list_PHY = helper.get_rolling_dict(sector_json, df, 4100, 10100, 100, 'PHY') #df.shape[0]
+    
+    json_data = {"all": dict_list_PHY}
     return json_data
     
 if __name__ == '__main__':
