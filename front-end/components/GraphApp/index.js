@@ -1,43 +1,25 @@
-
 import cytoscape from 'cytoscape';
 import d3Force from 'cytoscape-d3-force';
 import cola from 'cytoscape-cola';
 import popper from "cytoscape-popper";
+
+
 import styles from './GraphApp.module.scss'
 import {useCallback, useEffect, useRef , useState} from 'react'
 import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 
 import label_mst from '../../data/MST/MST_100.json'
+// import label_phy from '../../data/PHY/PHY_100.json'
+
 import DensityPlot from '../DensityPlot';
 import useInterval from '../../utils/useInterval';
 
-/* 
-import label_1 from '../../data/MST/idx=4100.json'
-import label_2 from '../../data/MST/idx=5000.json'
-import label_3 from '../../data/MST/idx=6000.json'
-import label_4 from '../../data/MST/idx=7000.json'
-import label_5 from '../../data/MST/idx=8000.json'
-import label_6 from '../../data/MST/idx=9000.json'
-import label_7 from '../../data/MST/idx=10000.json'
-
-
-import label0_1 from '../../data/PHY/idx=4100.json'
-import label0_2 from '../../data/PHY/idx=5000.json'
-import label0_3 from '../../data/PHY/idx=6000.json'
-import label0_4 from '../../data/PHY/idx=7000.json'
-import label0_5 from '../../data/PHY/idx=8000.json'
-import label0_6 from '../../data/PHY/idx=9000.json'
-import label0_7 from '../../data/PHY/idx=10000.json'
-*/
 
 cytoscape.use( d3Force );
 cytoscape.use( cola );
 cytoscape.use(popper);
 
 export default function GraphApp( props ) {
-
-  console.log("passed props")
-  console.log(props.json_data)
 
   const cy = useRef(null)
   const ly = useRef(null)
@@ -47,8 +29,14 @@ export default function GraphApp( props ) {
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
+
+  const arr_elements_MST = label_mst['all']
+  
+  // const arr_elements_PHY = label_phy['all']
+
   const [delay, setDelay] = useState(1)
   const [update, setUpdate] = useState(false) 
+
 
   const [arr_elements, setArr_elements] = useState(props.json_data)
 
@@ -73,12 +61,24 @@ export default function GraphApp( props ) {
       setUpdate(true)
     } , 
      
-    maxSimulationTime: 50000, 
-    convergenceThreshold:10000,
+    maxSimulationTime: 100000, 
+    convergenceThreshold:1000,
     refresh:1
   }
 
-  
+  const update_new_slider_pos = (event) =>{
+    
+    setCtn_arr(event.target.value)
+    const a = arr_elements[ ctn_arr % 100 ]
+    cy.current.json({elements:a})
+    ly.current = cy.current.layout(cola_layout)
+    ly.current.run()
+      
+    update_selected_node(selected_node.id , selected_node_values_oder)
+    
+
+
+  }
 
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
@@ -181,11 +181,7 @@ export default function GraphApp( props ) {
         {
           selector: 'edge',
           style: {
-            'opacity' : (e)=>{ 
-            let max = 2.0
-            let min = 1.3
-            return 0.5-(Math.min(1, Math.max(0, (e.data("value")-min)/(max-min))))*1000
-            }
+            
           }
         },
         {
@@ -252,24 +248,11 @@ export default function GraphApp( props ) {
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
     
-
+      <div className={styles.cyContainer}>
       <div id="cy" className={styles.cyDiv}>
 
 
-        <div className={styles.navbar}>
-          {playButton ? 
-          <FaPlay onClick={() => setPlayButton(false)}/>:
-          <FaStop onClick={ e => setPlayButton(true)}/>
-          }
-          <div className={styles.bar} >
-
-            <div className={styles.pointer } style={{left: ((ctn_arr % 100)/100)*100 +"%"}} > </div>
-            <div className={styles.date} style={{left:"0%"}} >1950</div>
-            <div className={styles.date} style={{left:"50%"}}>2000</div>
-            <div className={styles.date} style={{left:"100%"}}>2020</div>
-          </div>
-        </div>
-
+      
         <div className={styles.legend}>
           {Object.keys(map_sector_to_color).map( (el , idx) => {
           return <div key={idx} className={styles.lgditm}>
@@ -298,6 +281,19 @@ export default function GraphApp( props ) {
           
         </div>
 
+      </div>
+      <div className={styles.navbar}>
+          {playButton ? 
+          <FaPlay onClick={() => setPlayButton(false)}/>:
+          <FaStop onClick={ e => setPlayButton(true)}/>
+          }
+          <div className={styles.bar} >
+            <input type="range" min="0" max="100" defaultValue={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.bar}/>
+            <div className={styles.date} style={{left:"0%"}} >1950</div>
+            <div className={styles.date} style={{left:"45%"}}>2000</div>
+            <div className={styles.date} style={{left:"95%"}}>2020</div>
+          </div>
+      </div>
       </div>
       
       <div style={{width:"30%",height:"100%", border:"10px solid black" , padding:"10px"}}>
