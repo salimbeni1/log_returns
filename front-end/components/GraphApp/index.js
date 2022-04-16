@@ -8,8 +8,6 @@ import styles from './GraphApp.module.scss'
 import {useCallback, useEffect, useRef , useState} from 'react'
 import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 
-import label_mst from '../../public/data/MST/MST_100.json'
-
 import DensityPlot from '../DensityPlot';
 import useInterval from '../../utils/useInterval';
 
@@ -69,8 +67,6 @@ export default function GraphApp( props ) {
     ly.current.run()
       
     update_selected_node(selected_node.id , selected_node_values_oder)
-    
-
 
   }
 
@@ -257,30 +253,12 @@ export default function GraphApp( props ) {
 
         <div className={styles.layouts}>
 
-          <div className={styles.btn} onClick={ (e) => {
-              if (props.reload_data === undefined) {
-                setArr_elements(label_mst['all'])
-                re_render_graph(label_mst['all'])
-              } else {
-                props.reload_data('MST')
-              }
-            
-            }
-          }>
+          <div className={styles.btn} onClick={ () => props.reload_data('MST')}>
              <FaTree/>
               <p>MST</p>
           </div>
           
-          <div className={styles.btn} onClick={ (e) => {
-            if (props.reload_data === undefined) {
-              console.log(" NOT IMPLEMENTED YET !!! ")
-              // setArr_elements(label_phy['all'])
-              // re_render_graph(label_phy['all'])
-            } else {
-              props.reload_data('PHY')
-            }
-            
-          }} >
+          <div className={styles.btn} onClick={ e => props.reload_data('PHY')} >
               <FaTablets/>
               <p>PHY</p>
           </div>
@@ -345,7 +323,7 @@ export default function GraphApp( props ) {
          />
         
 
-        </> : <h1>Click on a Node to get more information</h1>
+        </> : <h1>Click on a Node for more information</h1>
       }
         
 
@@ -357,13 +335,13 @@ export default function GraphApp( props ) {
 
 
 const propTypes = {
-  json_data: Object,
+  json_data: { },
   reload_data: Function
 }; 
 
 GraphApp.propTypes = propTypes;
 
 GraphApp.defaultProps = {
-  json_data: label_mst,
-  reload_data: undefined
+  json_data: { "all" : { } },
+  reload_data: () => console.log("NOT IMPLEMENTED: assign props to GraphApp")
 };

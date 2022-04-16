@@ -14,43 +14,40 @@ export default function ConnectedGraphApp() {
 
   /* LOAD DATA FROM SERVER */
   if (firstLoad) {
-    axios.get("http://127.0.0.1:8000/mst").then(jsons => {
-      console.log(" FETCH COMPLETED ")
+    fetchData('http://127.0.0.1:8000/mst')
+    setFirstLoad(false)
+  }
+
+  function fetchData(url) {
+    axios.get(url).then(jsons => {
       setJsonsData(jsons.data)
       setFirstLoad(false)
       setDataIsNotLoaded(false)
+      console.log("SUCCESS: server fetch from " + url)
     }).catch(err => {
       console.log(" NETWORK ERROR ")
       console.log(err)
     })
   }
+
 
   function reFetchData(jsonType) {
     setDataIsNotLoaded(true)
 
-    let url = ' '
     switch (jsonType) {
       case 'MST':
-        url = "http://127.0.0.1:8000/mst"
+        fetchData("http://127.0.0.1:8000/mst")
         break
       case 'PHY':
-        url = "http://127.0.0.1:8000/phy"
+        fetchData("http://127.0.0.1:8000/phy")
         break
       
-        default:
-          url = "http://127.0.0.1:8000/mst"
+      default:
+        fetchData("http://127.0.0.1:8000/mst")
     }
 
-    axios.get(url).then(jsons => {
-      console.log(" FETCH COMPLETED ")
-      setJsonsData(jsons.data)
-      setDataIsNotLoaded(false)
-
-    }).catch(err => {
-      console.log(" NETWORK ERROR ")
-      console.log(err)
-    })
+    
   }
 
-  return  (dataIsNotLoaded) ? <h1> LOADING ... </h1> :  <GraphApp json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)}/> 
+  return  (dataIsNotLoaded) ? <h1 align="center"> LOADING ... </h1> :  <GraphApp json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)}/> 
 }

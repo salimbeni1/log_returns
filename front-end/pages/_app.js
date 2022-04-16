@@ -8,10 +8,10 @@ function MyApp({ Component, pageProps }) {
 
     <header className={styles.header}>
       <h1>LOG RETURNS</h1> 
-      <Link href='/'> preview </Link>
-      <Link href='/theproject'> the project </Link>
-      <Link href='/connectedgraph'> real time monitor </Link>
-      <Link href='/about'> about us </Link>
+      <Link href='/'> PREVIEW </Link>
+      <Link href='/theproject'> THE PROJECT </Link>
+      <Link href='/connectedgraph'> REAL TIME MONITOR </Link>
+      <Link href='/about'> ABOUT US </Link>
     </header>
 
     <div className={styles.app}>
