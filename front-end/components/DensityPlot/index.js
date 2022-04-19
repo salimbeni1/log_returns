@@ -93,7 +93,7 @@ export default function DensityPlot (props) {
 
     return (
 
-        <div ref={parentRef} style={{width:"100%"}}>
+        <div ref={parentRef} style={{padding: "0px 20px"}}>
             <div className={styles.labels}> 
                 <div style={{backgroundColor:"blue"}} ></div>
                 <p>selected</p>

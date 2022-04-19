@@ -1,16 +1,25 @@
 .cyContainer{
     width:70%;
-    .cyDiv{
-
-        width:100%;
-        height:85%;
-        border-block: 10px solid black;
-        
-        cursor:pointer ;
-        position:relative;
     
+    .cyDiv{
+        z-index: 1;
+        height: 80%;
+        margin: 50px;
+
+        border-radius: var(--border-rad) var(--border-rad) 0px 0px;
+        line-height: 25px;
+        background-color: white;
+        /* border: 1px solid black; */
+        cursor: pointer;
+        /* position: relative; */
+        margin: var(--margin-global) var(--margin-global) 0px var(--margin-global);
+        /*box-shadow: 20px 5px 40px var(--gradient-shadow-0), 0px 5px 40px var(--gradient-shadow-1), -20px 5px 40px var(--gradient-shadow-2);*/
+       
+
+
+
         .layouts{
-            z-index: 10;
+            z-index: 2;
             position : absolute ; 
             top: 10px;
             right: 10px;
@@ -39,7 +48,7 @@
     
     
         .legend{
-            z-index: 10;
+
             position : absolute ; 
             top: 10px;
             left: 10px;
@@ -58,21 +67,23 @@
         }
     }
     .navbar{
-        z-index: 10;
-        width : 100%;
-        height : 80px ;
-        position : relative ; 
-        bottom: 0px;
-        display : flex;
-        align-items: center;
-        padding: 20px;
 
+        height: 10%;
+    
+        display: flex;
+        align-items: center;
+        border-radius: 0px 0px var(--border-rad) var(--border-rad);
+        margin: 0px var(--margin-global) var(--margin-global) var(--margin-global);
+        /*border: 1px solid black;*/
+        padding: 26px;
+        background-color: white;
+        /*box-shadow: 20px 5px 40px var(--gradient-shadow-0), 0px 5px 40px var(--gradient-shadow-1), -20px 5px 40px var(--gradient-shadow-2);*/
+        
         svg{
             width : 50px;
             height: 50px ;
             padding: 10px;
 
-            
             cursor: pointer;
         }
 
@@ -97,22 +108,58 @@
 
 }
 
+.wrapper{
+    position: relative;
+    width: 30%;
+    height: 90%;
+    margin: var(--margin-global) var(--margin-global) var(--margin-global) 0px;
+}
+
+.content{
+    position: relative;
+    z-index: 2;
+    padding: 0px 20px;
+}
+
+
+.cntInfo{
+    display: flex;
+    justify-content: space-between;
+}
+
+.ctnInfo2{
+    position: relative;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    z-index: 3
+}
+
+.content2{
+    position: relative;
+    z-index: 4;
+}
 
 
 
 .nodeEdgeValues{
+
+    z-index: 3;
     
 
     .orderBar{
         display: flex;
         flex-direction: row;
         align-items: center;
+        padding-inline: 20px;
+
         
 
         svg{
             width: 35px;
             height: 35px;
             margin: 0px 15px;
+            
 
             padding: 5px;
             cursor: pointer;

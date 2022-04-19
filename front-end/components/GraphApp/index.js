@@ -35,6 +35,7 @@ export default function GraphApp( props ) {
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
     label: "SELECT A NODE",
+    sector:"others",
     edges: [ ]
   });
 
@@ -72,6 +73,7 @@ export default function GraphApp( props ) {
 
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
+
     if(id === "XXX") return;
     setSelected_node_values_oder(oder)
     const map_values_id = (node_) => (el) => {
@@ -113,6 +115,7 @@ export default function GraphApp( props ) {
     }
 
     const clicked_node = cy.current.$('#'+id)
+    
     setSelected_node({
       id : clicked_node.data("id"),
       label: clicked_node.data("label"),
@@ -122,6 +125,9 @@ export default function GraphApp( props ) {
         oder
         )
     })
+
+
+
 
   }
 
@@ -161,9 +167,12 @@ export default function GraphApp( props ) {
 
   useEffect(() => {
 
+    
+   
 
     const elements= arr_elements[ctn_arr]
 
+    
     cy.current = cytoscape({
       container: document.getElementById('cy'),
       elements,
@@ -182,11 +191,21 @@ export default function GraphApp( props ) {
             'label': (e) => e.data("label"),
             "text-valign" : "center",
             "text-halign" : "center",
-            "color" : "white",
+            "color" : "white", 
             "font-weight" : "800",
             "font-size" : "50px",
             "background-color" : (e) => map_sector_to_color[e.data("sector")] ? map_sector_to_color[e.data("sector")] : map_sector_to_color["others"]
 
+          }
+          
+        },
+        {
+          selector: 'node:selected',
+          style: {
+            'width' : '800px',
+            'height' : '800px',
+            "font-weight" : "800",
+            "font-size" : "200px",
           }
         }
         
@@ -208,6 +227,10 @@ export default function GraphApp( props ) {
     cy.current.on('tap','node', function(e){
       // tap node event : console.log(e.target.data())
       update_selected_node(e.target.data("id"))
+      
+      
+
+
     })
 
     return () => {}
@@ -272,63 +295,117 @@ export default function GraphApp( props ) {
           <FaStop onClick={ e => setPlayButton(true)}/>
           }
           <div className={styles.bar} >
-            <input type="range" min="0" max="100" defaultValue={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.bar}/>
+            <input type="range" min="0" max="100" value={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.bar}/>
             <div className={styles.date} style={{left:"0%"}} >1950</div>
             <div className={styles.date} style={{left:"45%"}}>2000</div>
             <div className={styles.date} style={{left:"95%"}}>2020</div>
           </div>
       </div>
       </div>
+
+      <div className={styles.wrapper}>
+
       
-      <div style={{width:"30%",height:"100%", border:"10px solid black" , padding:"10px"}}>
+        <div className={styles.content}>
 
-      {selected_node.label !== "SELECT A NODE" ?<>
+          {selected_node.label !== "SELECT A NODE" ?<>
 
-        <h1>
-          Asset : {selected_node.label}
-        </h1>
+            <div className={styles.cntInfo}>
 
-        <p>Sector : {selected_node.sector} </p>
+              <h1 > Asset  </h1>
+              <h1 > {selected_node.label}</h1>
 
-        <h3>values per asset</h3>
-        <div className={styles.nodeEdgeValues} >
+            </div>
+            <div className={styles.cntInfo}>
+              <p>Sector </p>
+              <p>{selected_node.sector} </p>
+            </div>
+
         
-          <div className={styles.orderBar}>
-            order by : 
+            <div className={styles.ctnInfo2}>
+              <div className={styles.content2}>
+                <h3>values per asset</h3>
+                <div className={styles.nodeEdgeValues} >
+                
+                  <div className={styles.orderBar}>
+                    order by : 
 
-            <FaSortAmountUp style={ selected_node_values_oder === "UP" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
-             onClick={ (e) => {
-                update_selected_node(selected_node.id , "UP")
-            }}/>
+                    <FaSortAmountUp style={ selected_node_values_oder === "UP" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+                    onClick={ (e) => {
+                        update_selected_node(selected_node.id , "UP")
+                    }}/>
+                    
+                    <FaSortAmountDownAlt style={ selected_node_values_oder === "DOWN" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+                    onClick={ (e) => {
+                      update_selected_node(selected_node.id , "DOWN")
+                    }}/>
+                    <FaIndustry style={ selected_node_values_oder === "SECTOR" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+                    onClick={ (e) => {
+                      update_selected_node(selected_node.id , "SECTOR")
+                    }}/>
+                  </div>
+
+                  <div className={styles.edgeTable}>
+                    {selected_node.edges.map( (e,idx) => <p key={idx} style={{backgroundColor: map_sector_to_color[e.node.sector], color:"white", opacity: "0.5"}}> {e.node.label} {e.value}</p>)}
+                  </div>
+                </div>
+              </div>
+              <div style={{
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                opacity: ".8",
+                backgroundColor: map_sector_to_color[selected_node.sector],
+                borderRadius: "var(--border-rad)"}}>
+              </div>
+            </div>
+
+            <div className={styles.ctnInfo2}>
+              <div className={styles.content2}>
+
+                <h3>values distribution</h3>
+                <DensityPlot 
+                  data={selected_node.edges.map(e => e.value)}
+                  dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
+                />
+              </div>
+              <div style={{
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                opacity: ".8",
+                backgroundColor: map_sector_to_color[selected_node.sector],
+                borderRadius: "var(--border-rad)"}}>
+              </div>
+
+            </div>
             
-            <FaSortAmountDownAlt style={ selected_node_values_oder === "DOWN" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
-            onClick={ (e) => {
-              update_selected_node(selected_node.id , "DOWN")
-            }}/>
-            <FaIndustry style={ selected_node_values_oder === "SECTOR" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
-            onClick={ (e) => {
-              update_selected_node(selected_node.id , "SECTOR")
-            }}/>
-          </div>
 
-          <div className={styles.edgeTable}>
-            {selected_node.edges.map( (e,idx) => <p key={idx} style={{backgroundColor: map_sector_to_color[e.node.sector], color:"white"}}> {e.node.label} {e.value}</p>)}
-          </div>
+            </> : <h1>Click on a Node for more information</h1>
+          }
+          
+
         </div>
+        <div style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          opacity: ".3",
+          backgroundColor: map_sector_to_color[selected_node.sector],
+          borderRadius: "var(--border-rad)",
+          zIndex: 1
 
-        <h3>values distribution</h3>
-        <DensityPlot 
-          data={selected_node.edges.map(e => e.value)}
-          dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
-         />
-        
-
-        </> : <h1>Click on a Node for more information</h1>
-      }
-        
-
+          }}>
+        </div>
       </div>
-
     </div>
   )
 }

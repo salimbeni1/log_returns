@@ -13,7 +13,9 @@
         display: flex;
         justify-content: space-around;
         align-items: center;
-        height: 58.8px;
+        color: var(--font-color-1);
+        background-color: var(--bg-color-1);
+        padding-top: 1%;
         
 
         h1{
@@ -29,8 +31,9 @@
             font-weight: 600;
         }
         a:hover{
-            background-color: black;
-            color: white;
+            background-color: var(--bg-color-0);
+            color: var(--font-color-0);
+            border-radius: var(--border-rad) var(--border-rad) 0px 0px;
         }
 
         

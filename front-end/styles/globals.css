@@ -1,12 +1,22 @@
 
 :root {
-  --bg-color-0: rgb(240, 240, 240);
-  --bg-color-1: rgb(221, 221, 221);
+  --bg-color-0: #EEEEEE;
+  --bg-color-1: #333333;
   --bg-color-2: rgb(206, 206, 206);
 
-  --font-color-0: rgb(10, 10, 10);
-  --font-color-1: rgb(49, 49, 49);
+  --font-color-0: #333333;
+  --font-color-1: #DDDDDD;
   --font-color-2: rgb(86, 146, 86);
+
+  --border-rad: 5px;
+
+  --gradient-shadow-0:#414141;
+  --gradient-shadow-1:#a3a3a3;
+  --gradient-shadow-2:#e2e2e2;
+
+  --margin-global: 40px;
+
+  
 }
 
 
@@ -20,10 +30,8 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-
   overflow-y: scroll;
-  scrollbar-width: none;
-  
+  scrollbar-width: none; 
 }
 
 
