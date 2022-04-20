@@ -5,7 +5,7 @@ import popper from "cytoscape-popper";
 
 
 import styles from './GraphApp.module.scss'
-import {useCallback, useEffect, useRef , useState} from 'react'
+import {useCallback,useLayoutEffect ,  useEffect, useRef , useState} from 'react'
 import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
 
 import DensityPlot from '../DensityPlot';
@@ -151,21 +151,30 @@ export default function GraphApp( props ) {
   },[selected_node, selected_node_values_oder])
 
   const map_sector_to_color = {
-    "Industrials" : "green", 
-    "Technology" : "black",
-    "Communication Services" : "red",
-    "Basic Materials" : "blue",
-    "Consumer Defensive" : "violet",
-    "Energy" : "yellow",
-    "Healthcare" : "pink",
-    "Consumer Cyclical" : "grey",
-    "Utilities" : "cyan",
-    "Financial Services" : "magenta",
-    "others" : "orange",
+    "Industrials"            : [255, 102, 153], 
+    "Technology"             : [146, 86 , 86 ],
+    "Communication Services" : [86 , 86 , 146],
+    "Basic Materials"        : [204, 102, 255],
+    "Consumer Defensive"     : [102, 153, 255],
+    "Energy"                 : [102, 255, 204],
+    "Healthcare"             : [255, 204, 102],
+    "Consumer Cyclical"      : [255, 0  , 102],
+    "Utilities"              : [0  , 204, 0  ],
+    "Financial Services"     : [204, 153, 0  ],
+    "others"                 : [204, 204, 255],
+  }
+
+  const rgb_opacity_to_rgba  = (rgb_arr , opacity ) => {
+    return "rgba("+rgb_arr.join()+" , "+opacity+")"
+  }
+
+  const sector_opacity_to_rgba  = (sector , opacity ) => {
+    const rgb_arr =  map_sector_to_color[sector] ? map_sector_to_color[sector] : map_sector_to_color["others"]
+    return rgb_opacity_to_rgba(rgb_arr , opacity)
   }
 
 
-  useEffect(() => {
+  useLayoutEffect(() => {
 
     
    
@@ -194,7 +203,7 @@ export default function GraphApp( props ) {
             "color" : "white", 
             "font-weight" : "800",
             "font-size" : "50px",
-            "background-color" : (e) => map_sector_to_color[e.data("sector")] ? map_sector_to_color[e.data("sector")] : map_sector_to_color["others"]
+            "background-color" : (e) => sector_opacity_to_rgba(e.data("sector") , 1.0)
 
           }
           
@@ -265,7 +274,7 @@ export default function GraphApp( props ) {
         <div className={styles.legend}>
           {Object.keys(map_sector_to_color).map( (el , idx) => {
           return <div key={idx} className={styles.lgditm}>
-             <div className={styles.color} style={{backgroundColor:map_sector_to_color[el]}}></div> 
+             <div className={styles.color} style={{backgroundColor:sector_opacity_to_rgba(el , 1.0)}}></div> 
              {el}
             </div> })}
           </div>
@@ -299,10 +308,9 @@ export default function GraphApp( props ) {
       </div>
       </div>
 
-      <div className={styles.wrapper}>
+      <div className={styles.wrapper} style={{backgroundColor: sector_opacity_to_rgba(selected_node.sector , .3),}}>
 
-      
-        <div className={styles.content}>
+        <div className={styles.content} >
 
           {selected_node.label !== "SELECT A NODE" ?<>
 
@@ -317,9 +325,9 @@ export default function GraphApp( props ) {
               <p>{selected_node.sector} </p>
             </div>
 
-        
-            <div className={styles.ctnInfo2}>
-              <div className={styles.content2}>
+            <div className={styles.scrollable}>
+            <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
+              <div className={styles.content2} >
                 <h3>values per asset</h3>
                 <div className={styles.nodeEdgeValues} >
                 
@@ -342,24 +350,13 @@ export default function GraphApp( props ) {
                   </div>
 
                   <div className={styles.edgeTable}>
-                    {selected_node.edges.map( (e,idx) => <p key={idx} style={{backgroundColor: map_sector_to_color[e.node.sector], color:"white", opacity: "0.5"}}> {e.node.label} {e.value}</p>)}
+                    {selected_node.edges.map( (e,idx) => <p key={idx} style={{backgroundColor: sector_opacity_to_rgba(e.node.sector , 0.5), color:"white"}}> {e.node.label} {e.value}</p>)}
                   </div>
                 </div>
               </div>
-              <div style={{
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                zIndex: 2,
-                opacity: ".4",
-                backgroundColor: "white",
-                borderRadius: "var(--border-rad)"}}>
-              </div>
             </div>
 
-            <div className={styles.ctnInfo2}>
+            <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
               <div className={styles.content2}>
 
                 <h3>values distribution</h3>
@@ -368,38 +365,14 @@ export default function GraphApp( props ) {
                   dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
                 />
               </div>
-              <div style={{
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                zIndex: 2,
-                opacity: ".4",
-                backgroundColor: "white",
-                borderRadius: "var(--border-rad)"}}>
-              </div>
+            </div>
 
             </div>
             
-
             </> : <h1>Click on a Node for more information</h1>
           }
           
 
-        </div>
-        <div style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          opacity: ".3",
-          backgroundColor: map_sector_to_color[selected_node.sector],
-          borderRadius: "var(--border-rad)",
-          zIndex: 1
-
-          }}>
         </div>
       </div>
     </div>

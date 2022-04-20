@@ -3,7 +3,7 @@
     
     .cyDiv{
         z-index: 1;
-        height: 80%;
+        height: 75vh;
         margin: 50px;
 
         border-radius: var(--border-rad) var(--border-rad) 0px 0px;
@@ -52,6 +52,8 @@
             position : absolute ; 
             top: 10px;
             left: 10px;
+
+            z-index: 10;
     
             .lgditm{
                 display: grid;
@@ -68,7 +70,7 @@
     }
     .navbar{
 
-        height: 10%;
+        height: 10vh;
     
         display: flex;
         align-items: center;
@@ -108,37 +110,64 @@
 
 }
 
+
+
 .wrapper{
     position: relative;
     width: 30%;
-    height: 90%;
+    height: 85vh;
     margin: var(--margin-global) var(--margin-global) var(--margin-global) 0px;
-}
-
-.content{
-    position: relative;
-    z-index: 2;
-    padding: 0px 20px;
-}
+    border-radius: var(--border-rad);
 
 
-.cntInfo{
-    display: flex;
-    justify-content: space-between;
+    .content{
+        position: relative;
+        z-index: 2;
+        padding: 0px 20px;
+        border-radius: var(--border-rad);
+
+        .cntInfo{
+            display: flex;
+            justify-content: space-between;
+        }
+    } 
+
+    .scrollable::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .scrollable{
+        height: 65vh;
+        overflow-y: scroll;
+        scrollbar-width: none;
+
+        h3{
+            margin: 0px;
+            padding: 0px;
+            padding-bottom: 5px;
+        }
+
+        .ctnInfo2{
+            position: relative;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            z-index: 3;
+            border-radius: var(--border-rad);
+
+            .content2{
+                position: relative;
+                z-index: 4;
+            }
+        }
+    }
+
+    
+    
 }
 
-.ctnInfo2{
-    position: relative;
-    padding: 20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    z-index: 3
-}
 
-.content2{
-    position: relative;
-    z-index: 4;
-}
+
 
 
 

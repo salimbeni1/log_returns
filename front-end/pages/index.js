@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import GraphApp from '../components/GraphApp'
+import { LoadingGraphApp } from '../components/LoadingGraphApp'
 
 export default function Home() {
 
@@ -37,6 +38,6 @@ export default function Home() {
     }
   }
   
-  return  (dataIsNotLoaded) ? <h1 align="center"> LOADING ... </h1> :  <GraphApp json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)}/> 
+  return  (dataIsNotLoaded) ? <LoadingGraphApp/> :  <GraphApp json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)}/> 
 
 }
