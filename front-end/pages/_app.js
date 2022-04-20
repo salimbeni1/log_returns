@@ -9,10 +9,10 @@ function MyApp({ Component, pageProps }) {
     <header className={styles.header}>
       <h1 style={ {color: "white"}}>Log-Returns</h1> 
       <div style={ {height: "60%", width: "3px", backgroundColor: "var(--font-color-1)"}}></div> 
-      <Link href='/' style={ {backgroundColor: "var(--font-color-1)"}}> PREVIEW </Link>
-      <Link href='/theproject'style={ {backgroundColor: "var(--font-color-1)"}}> THE PROJECT </Link>
-      <Link href='/connectedgraph'style={ {backgroundColor: "var(--font-color-1)"}}> REAL TIME MONITOR </Link>
-      <Link href='/about'style={ {backgroundColor: "var(--font-color-1)"}}> ABOUT US </Link>
+      <Link href='/' style={ {backgroundColor: "var(--font-color-1)"}}> Preview </Link>
+      <Link href='/theproject'style={ {backgroundColor: "var(--font-color-1)"}}> The Project </Link>
+      <Link href='/connectedgraph'style={ {backgroundColor: "var(--font-color-1)"}}> Real Time Monitor </Link>
+      <Link href='/about'style={ {backgroundColor: "var(--font-color-1)"}}> About us </Link>
     </header>
 
     <div className={styles.app}>

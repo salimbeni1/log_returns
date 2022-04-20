@@ -227,10 +227,6 @@ export default function GraphApp( props ) {
     cy.current.on('tap','node', function(e){
       // tap node event : console.log(e.target.data())
       update_selected_node(e.target.data("id"))
-      
-      
-
-
     })
 
     return () => {}
@@ -357,8 +353,8 @@ export default function GraphApp( props ) {
                 top: 0,
                 left: 0,
                 zIndex: 2,
-                opacity: ".8",
-                backgroundColor: map_sector_to_color[selected_node.sector],
+                opacity: ".4",
+                backgroundColor: "white",
                 borderRadius: "var(--border-rad)"}}>
               </div>
             </div>
@@ -379,8 +375,8 @@ export default function GraphApp( props ) {
                 top: 0,
                 left: 0,
                 zIndex: 2,
-                opacity: ".8",
-                backgroundColor: map_sector_to_color[selected_node.sector],
+                opacity: ".4",
+                backgroundColor: "white",
                 borderRadius: "var(--border-rad)"}}>
               </div>
 
