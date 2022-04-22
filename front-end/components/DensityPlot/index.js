@@ -43,7 +43,7 @@ export default function DensityPlot (props) {
             .range([margin.left, width - margin.right]);
         
         var y = d3.scaleLinear()
-            .domain([0, 25.0])
+            .domain([0, 65.0])
             .range([height - margin.bottom, margin.top]);
         
         const kde = kernelDensityEstimator(kernelEpanechnikov(0.01), x.ticks(100))
@@ -59,7 +59,7 @@ export default function DensityPlot (props) {
             .datum(density)
             .attr("fill", "none")
             .attr("opacity", 1)
-            .attr("stroke", "#00f")
+            .attr("stroke", props.color)
             .attr("stroke-width", 5)
             .attr("stroke-linejoin", "round")
             .attr("d",  d3.line()
@@ -95,7 +95,7 @@ export default function DensityPlot (props) {
 
         <div ref={parentRef} style={{padding: "0px 20px"}}>
             <div className={styles.labels}> 
-                <div style={{backgroundColor:"blue"}} ></div>
+                <div style={{backgroundColor:props.color}} ></div>
                 <p>selected</p>
                 <div style={{backgroundColor:"black"}} ></div>
                 <p>general</p>

@@ -450,6 +450,7 @@ export default function GraphApp( props ) {
                 <DensityPlot 
                   data={selected_node.edges.map(e => e.value)}
                   dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
+                  color={sector_opacity_to_rgba(selected_node.sector , 0.8)}
                 />
               </div>
             </div>
