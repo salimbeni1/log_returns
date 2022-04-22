@@ -6,7 +6,7 @@ import popper from "cytoscape-popper";
 
 import styles from './GraphApp.module.scss'
 import {useCallback,useLayoutEffect ,  useEffect, useRef , useState} from 'react'
-import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry} from 'react-icons/fa';
+import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 
 import DensityPlot from '../DensityPlot';
 import useInterval from '../../utils/useInterval';
@@ -35,7 +35,7 @@ export default function GraphApp( props ) {
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
     label: "SELECT A NODE",
-    sector:"others",
+    sector:"none",
     edges: [ ]
   });
 
@@ -169,15 +169,16 @@ export default function GraphApp( props ) {
   }
 
   const sector_opacity_to_rgba  = (sector , opacity ) => {
+    if (sector === "none"){
+      return "white"
+    }
+    
     const rgb_arr =  map_sector_to_color[sector] ? map_sector_to_color[sector] : map_sector_to_color["others"]
     return rgb_opacity_to_rgba(rgb_arr , opacity)
   }
 
 
   useLayoutEffect(() => {
-
-    
-   
 
     const elements= arr_elements[ctn_arr]
 
@@ -237,7 +238,7 @@ export default function GraphApp( props ) {
       // tap node event : console.log(e.target.data())
       update_selected_node(e.target.data("id"))
     })
-
+    
     return () => {}
   }, [])
 
@@ -262,6 +263,32 @@ export default function GraphApp( props ) {
       
   }, playButton ? null:  delay)
 
+  const clean_dropdown = (event, elem, style) => {
+
+    if (typeof elem != 'undefined'){
+    
+      if (!elem.contains(event.target)) {
+        var list = document.getElementsByClassName(style)
+        for (var i = 0; i < list.length; i++) {
+          list[i].style['display'] = "none"
+        } 
+      }
+    }
+  }
+  const clean_dropdown_simple = (style) => {
+    var list = document.getElementsByClassName(style)
+    for (var i = 0; i < list.length; i++) {
+        list[i].style['display'] = "none"
+    } 
+  }
+
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+
+    clean_dropdown(event,document.getElementsByClassName(styles.dropdown)[0],styles.layouts)
+    clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[1],styles.orderBar)
+
+  }
   
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
@@ -269,16 +296,16 @@ export default function GraphApp( props ) {
       <div className={styles.cyContainer}>
       <div id="cy" className={styles.cyDiv}>
 
-
-      
-        <div className={styles.legend}>
-          {Object.keys(map_sector_to_color).map( (el , idx) => {
-          return <div key={idx} className={styles.lgditm}>
-             <div className={styles.color} style={{backgroundColor:sector_opacity_to_rgba(el , 1.0)}}></div> 
-             {el}
-            </div> })}
-          </div>
-
+      <div className={styles.dropdown}>
+        <FaList onClick={() => {
+       
+          var list = document.getElementsByClassName(styles.layouts)
+          for (var i = 0; i < list.length; i++) {
+            list[i].style['display'] = "block"
+          } 
+        }
+        }/>
+  
         <div className={styles.layouts}>
 
           <div className={styles.btn} onClick={ () => props.reload_data('MST')}>
@@ -292,6 +319,19 @@ export default function GraphApp( props ) {
           </div>
           
         </div>
+      </div>
+
+
+      
+        <div className={styles.legend}>
+          {Object.keys(map_sector_to_color).map( (el , idx) => {
+          return <div key={idx} className={styles.lgditm}>
+             <div className={styles.color} style={{backgroundColor:sector_opacity_to_rgba(el , 1.0)}}></div> 
+             {el}
+            </div> })}
+          </div>
+
+        
 
       </div>
       <div className={styles.navbar}>
@@ -300,7 +340,7 @@ export default function GraphApp( props ) {
           <FaStop onClick={ e => setPlayButton(true)}/>
           }
           <div className={styles.bar} >
-            <input type="range" min="0" max="100" value={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.bar}/>
+            <input type="range" min="0" max="100" value={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.slider}/>
             <div className={styles.date} style={{left:"0%"}} >1950</div>
             <div className={styles.date} style={{left:"45%"}}>2000</div>
             <div className={styles.date} style={{left:"95%"}}>2020</div>
@@ -330,23 +370,37 @@ export default function GraphApp( props ) {
               <div className={styles.content2} >
                 <h3>values per asset</h3>
                 <div className={styles.nodeEdgeValues} >
+
+                <div className={styles.dropdown}>
+                  <FaList onClick={() => {
+       
+                    var list = document.getElementsByClassName(styles.orderBar)
+                    for (var i = 0; i < list.length; i++) {
+                      list[i].style['display'] = "block"
+                    } 
+                  }
+                  }/>
                 
                   <div className={styles.orderBar}>
-                    order by : 
+                     
 
-                    <FaSortAmountUp style={ selected_node_values_oder === "UP" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+                    <FaSortAmountUp className={styles.btn}
                     onClick={ (e) => {
                         update_selected_node(selected_node.id , "UP")
+                        clean_dropdown_simple(styles.orderBar)
                     }}/>
                     
-                    <FaSortAmountDownAlt style={ selected_node_values_oder === "DOWN" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+                    <FaSortAmountDownAlt className={styles.btn}
                     onClick={ (e) => {
                       update_selected_node(selected_node.id , "DOWN")
+                      clean_dropdown_simple(styles.orderBar)
                     }}/>
-                    <FaIndustry style={ selected_node_values_oder === "SECTOR" ?  { color:"white", backgroundColor:"black"} :  {color:"black" , backgroundColor:"transparent"} }
+                    <FaIndustry className={styles.btn}
                     onClick={ (e) => {
                       update_selected_node(selected_node.id , "SECTOR")
+                      clean_dropdown_simple(styles.orderBar)
                     }}/>
+                  </div>
                   </div>
 
                   <div className={styles.edgeTable}>
@@ -369,7 +423,12 @@ export default function GraphApp( props ) {
 
             </div>
             
-            </> : <h1>Click on a Node for more information</h1>
+            </> : 
+            <>
+            <h1>Clustering Financial Time Series</h1>
+            
+            <p>Click on a node for more information of their correlations alongside interaction networks.</p>
+            </>
           }
           
 
