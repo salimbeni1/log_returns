@@ -1,7 +1,6 @@
 import cytoscape from 'cytoscape';
 import d3Force from 'cytoscape-d3-force';
 import cola from 'cytoscape-cola';
-import popper from "cytoscape-popper";
 
 
 import styles from './GraphApp.module.scss'
@@ -14,8 +13,6 @@ import useInterval from '../../utils/useInterval';
 
 cytoscape.use( d3Force );
 cytoscape.use( cola );
-cytoscape.use(popper);
-
 
 export default function GraphApp( props ) {
 
@@ -74,7 +71,15 @@ export default function GraphApp( props ) {
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
 
-    if(id === "XXX") return;
+    if(id === "XXX") {
+      setSelected_node({
+        id : "XXX",
+        label: "SELECT A NODE",
+        sector:"none",
+        edges: [ ]
+      })
+      return;
+    }
     setSelected_node_values_oder(oder)
     const map_values_id = (node_) => (el) => {
       const n_id =  el.data("target") === node_.data("id") ? el.data("source") : el.data("target")
@@ -196,15 +201,17 @@ export default function GraphApp( props ) {
         {
           selector: 'node',
           style: {
-            'width' : '200px',
-            'height' : '200px',
+            'width' : '700px',
+            'height' : '700px',
             'label': (e) => e.data("label"),
             "text-valign" : "center",
             "text-halign" : "center",
             "color" : "white", 
             "font-weight" : "800",
-            "font-size" : "50px",
-            "background-color" : (e) => sector_opacity_to_rgba(e.data("sector") , 1.0)
+            "font-size" : "150px",
+            "background-color" : (e) => sector_opacity_to_rgba(e.data("sector") , 1.0),
+            "transition-property": "height, width",
+            "transition-duration": "0.3s",
 
           }
           
@@ -212,23 +219,38 @@ export default function GraphApp( props ) {
         {
           selector: 'node:selected',
           style: {
-            'width' : '800px',
-            'height' : '800px',
+            'width' : '1000px',
+            'height' : '1000px',
             "font-weight" : "800",
             "font-size" : "200px",
+          }
+        },
+        {
+          selector: ".hover",
+          css: {
+            'width' : '1000px',
+            'height' : '1000px',
           }
         }
         
       ],
       layout: cola_layout,
       
-      zoom: 0.18,
-      pan: { x: 300, y: 240 },
+      zoom: 0.07,
+      pan: { x: 450, y: 260 },
 
     });
 
    
 
+    cy.current.on('tap', function(event){
+      // target holds a reference to the originator
+      // of the event (core or element)
+      if( event.target === cy.current ){
+        // bg event click
+        update_selected_node('XXX')
+      }
+    });
     
 
     cy.current.on('tap','edge', function(e){
@@ -237,6 +259,17 @@ export default function GraphApp( props ) {
     cy.current.on('tap','node', function(e){
       // tap node event : console.log(e.target.data())
       update_selected_node(e.target.data("id"))
+    })
+
+    cy.current.on('mouseover','node', function(e){
+      var node = e.target[0];
+      node.addClass("hover")
+      
+    })
+    cy.current.on('mouseout','node', function(e){
+      var node = e.target[0];
+      node.removeClass('hover')
+      
     })
     
     return () => {}
