@@ -44,8 +44,8 @@
         .dropdown{
             z-index: 2;
             position : absolute ; 
-            top: 30px;
-            right: 50px;
+            top: 10px;
+            right: 10px;
             
 
             svg{
@@ -59,7 +59,11 @@
                 position : absolute ; 
                 display: none;
                 overflow: auto;
+                right: 0px;
                 top: 0px;
+                padding: 10px;
+                background-color: var(--bg-color-0);
+                border-radius: var(--border-rad);
         
                 .btn{
         
@@ -67,7 +71,8 @@
                     flex-direction: row;
                     align-items: center;
                     padding: 5px;
-                    background-color: var(--bg-color-0);
+                    border-radius: var(--border-rad);
+                    
                     
         
                     svg{
@@ -131,6 +136,7 @@
                 position: relative;
                 width: 100%;
                 background-color: var(--bg-color-0);
+                border-radius: var(--border-rad)
 
 
             }
@@ -140,6 +146,7 @@
                 width: 25px;
                 height: 25px;
                 background: var(--bg-color-1);
+                border-radius: var(--border-rad);
                 cursor: pointer;
               }
 
@@ -219,6 +226,7 @@
         position : absolute ; 
         top: 0px;
         right: 10px;
+        cursor: pointer;
         
 
         svg{
