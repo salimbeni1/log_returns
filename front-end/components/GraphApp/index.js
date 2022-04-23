@@ -51,7 +51,7 @@ export default function GraphApp( props ) {
       setUpdate(true)
     } , 
      
-    maxSimulationTime: 100000, 
+    maxSimulationTime: 5000, 
     convergenceThreshold:1000,
     refresh:1
   }
@@ -70,6 +70,9 @@ export default function GraphApp( props ) {
 
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
+
+    cy.current.$('#'+selected_node.id).unlock();
+    cy.current.$('#'+id).lock();
 
     if(id === "XXX") {
       setSelected_node({
@@ -241,7 +244,7 @@ export default function GraphApp( props ) {
       ],
       layout: cola_layout,
       
-      zoom: 0.07,
+      zoom: 0.008,
       pan: { x: 450, y: 260 },
 
     });
@@ -296,7 +299,7 @@ export default function GraphApp( props ) {
         setUpdate(false)
     
       } else {
-        setDelay(x => x++)
+        setDelay(x => x)
       }
       
   }, playButton ? null:  delay)
@@ -351,10 +354,13 @@ export default function GraphApp( props ) {
               <p>MST</p>
           </div>
           
-          <div className={styles.btn} onClick={ e => props.reload_data('PHY')} >
+          {/**
+           <div className={styles.btn} onClick={ e => props.reload_data('PHY')} >
               <FaTablets/>
               <p>PHY</p>
           </div>
+           */}
+          
           
         </div>
       </div>
