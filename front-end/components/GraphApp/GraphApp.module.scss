@@ -3,7 +3,7 @@
     
     .cyDiv{
         z-index: 1;
-        height: 75vh;
+        height: 80%;
         
 
         border-radius: var(--border-rad) var(--border-rad) 0px 0px;
@@ -101,7 +101,7 @@
     }
     .navbar{
 
-        height: 10vh;
+        height: 15%;
     
         display: flex;
         align-items: center;
@@ -129,6 +129,40 @@
             .date{
 
                 position: absolute;
+
+            }
+            .dateCriseMarker{
+
+                position: absolute;
+                bottom: 4px;
+                background-color: red;
+                width: 2px;
+                height: 40px;
+                z-index: 1;
+
+                .dateCrise1{
+                    
+                    position: absolute; 
+                    bottom: 40px;
+                    border: 2px solid red;
+                    padding: 5px;
+                    width: 125px;
+                    background: white;
+    
+                }
+                .dateCrise2{
+                    
+                    position: absolute;
+                    right: 0px;
+                    bottom: 40px;
+                    border: 2px solid red;
+                    padding: 5px;
+                    width: 165px;
+                    background: white;
+
+    
+                }
+                
 
             }
             .slider{
@@ -161,7 +195,7 @@
 .wrapper{
     position: relative;
     width: 30%;
-    height: 85vh;
+    height: 95%;
     margin: var(--margin-global) var(--margin-global) var(--margin-global) 0px;
     border-radius: var(--border-rad);
 

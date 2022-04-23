@@ -45,8 +45,8 @@ export default function GraphApp( props ) {
     fit: false,
     
     centerGraph: false,
-    nodeSpacing: function( node ){ return 10; }, // space around node
-    edgeLength:  function( edge ){ return edge.data("value")*2000 },
+    nodeSpacing: function( node ){ return 1; }, // space around node
+    edgeLength:  function( edge ){ return edge.data("value")*4000 },
     stop: function(){
       setUpdate(true)
     } , 
@@ -166,7 +166,8 @@ export default function GraphApp( props ) {
     "Consumer Cyclical"      : [255, 0  , 102],
     "Utilities"              : [0  , 204, 0  ],
     "Financial Services"     : [204, 153, 0  ],
-    "others"                 : [204, 204, 255],
+    "Real Estate"            : [204, 204, 255]
+    /*"others"                 : [128,128,128] */
   }
 
   const rgb_opacity_to_rgba  = (rgb_arr , opacity ) => {
@@ -195,20 +196,22 @@ export default function GraphApp( props ) {
         {
           selector: 'edge',
           style: {
+            'width' : '100px',
+            'height' : '100px',
             
           }
         },
         {
           selector: 'node',
           style: {
-            'width' : '700px',
-            'height' : '700px',
+            'width' : '1000px',
+            'height' : '1000px',
             'label': (e) => e.data("label"),
             "text-valign" : "center",
             "text-halign" : "center",
             "color" : "white", 
             "font-weight" : "800",
-            "font-size" : "150px",
+            "font-size" : "300px",
             "background-color" : (e) => sector_opacity_to_rgba(e.data("sector") , 1.0),
             "transition-property": "height, width",
             "transition-duration": "0.3s",
@@ -219,17 +222,19 @@ export default function GraphApp( props ) {
         {
           selector: 'node:selected',
           style: {
-            'width' : '1000px',
-            'height' : '1000px',
+            'width' : '2600px',
+            'height' : '2600px',
             "font-weight" : "800",
-            "font-size" : "200px",
+            "font-size" : "800px",
           }
         },
         {
           selector: ".hover",
           css: {
-            'width' : '1000px',
-            'height' : '1000px',
+            'width' : '2600px',
+            'height' : '2600px',
+            "font-weight" : "800",
+            "font-size" : "800px"
           }
         }
         
@@ -373,10 +378,18 @@ export default function GraphApp( props ) {
           <FaStop onClick={ e => setPlayButton(true)}/>
           }
           <div className={styles.bar} >
-            <input type="range" min="0" max="100" value={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.slider}/>
-            <div className={styles.date} style={{left:"0%"}} >1950</div>
-            <div className={styles.date} style={{left:"45%"}}>2000</div>
-            <div className={styles.date} style={{left:"95%"}}>2020</div>
+            <input type="range" min="0" max="745" value={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.slider}/>
+            <div className={styles.date} style={{left:"0%"}} >2007</div>
+            
+            <div className={styles.dateCriseMarker} style={{left:"11%"}} >
+              <div className={styles.dateCrise1}  >Financial Crisis</div>
+            </div>
+            <div className={styles.date} style={{left:"45%"}}>2015</div>
+            
+            <div className={styles.dateCriseMarker} style={{left:"88%"}} >
+            <div className={styles.dateCrise2}  >COVID-19 pandemic</div>
+            </div>
+            <div className={styles.date} style={{left:"95%"}}>2022</div>
           </div>
       </div>
       </div>

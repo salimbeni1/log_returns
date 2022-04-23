@@ -10,7 +10,7 @@ export default function Home() {
   const [firstLoad, setFirstLoad] = useState(true)
 
   if (firstLoad) {
-    fetchData('/data/MST/MST_100.json')
+    fetchData('/data/MST/MST_745.json')
     setFirstLoad(false)
   }
 
@@ -27,14 +27,14 @@ export default function Home() {
 
     switch (jsonType) {
       case 'MST':
-        fetchData('/data/MST/MST_100.json')
+        fetchData('/data/MST/MST_745.json')
         break
       case 'PHY':
         fetchData('/data/PHY/PHY_100.json')
         break
       
       default:
-        fetchData('/data/MST/MST_100.json')
+        fetchData('/data/MST/MST_745.json')
     }
   }
   
