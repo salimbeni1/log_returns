@@ -8,6 +8,7 @@ import {useCallback,useLayoutEffect ,  useEffect, useRef , useState} from 'react
 import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 
 import DensityPlot from '../DensityPlot';
+import SectorPlot from '../SectorPlot';
 import useInterval from '../../utils/useInterval';
 
 
@@ -43,22 +44,24 @@ export default function GraphApp( props ) {
     name: 'cola',
     infinite: false,
     fit: false,
-    
-    centerGraph: false,
+    padding: 30,
+    avoidOverlap: false,
+    animate:true,
+    centerGraph: true,
     nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return edge.data("value")*4000 },
+    edgeLength:  function( edge ){ return 2000./edge.data("value")},
     stop: function(){
       setUpdate(true)
     } , 
      
-    maxSimulationTime: 5000, 
-    convergenceThreshold:1000,
+    maxSimulationTime: 50000, 
+    convergenceThreshold:100000,
     refresh:1
   }
 
   const update_new_slider_pos = (event) =>{
     
-    setCtn_arr(event.target.value)
+    setCtn_arr(parseInt(event.target.value))
     const a = arr_elements[ ctn_arr % arr_elements.length]
     cy.current.json({elements:a})
     ly.current = cy.current.layout(cola_layout)
@@ -128,6 +131,9 @@ export default function GraphApp( props ) {
       id : clicked_node.data("id"),
       label: clicked_node.data("label"),
       sector:  clicked_node.data("sector"),
+      industry:  clicked_node.data("industry"),
+      fullTimeEmp:  clicked_node.data("fullTimeEmp"),
+      
       edges: oder_selected_node_values(
         clicked_node.connectedEdges().map( map_values_id(clicked_node) ),
         oder
@@ -154,6 +160,7 @@ export default function GraphApp( props ) {
     cy.current.json({elements:g[ 0 ]})
     ly.current = cy.current.layout(cola_layout)
     ly.current.run()
+
     setCtn_arr( 0 )
     update_selected_node(selected_node.id , selected_node_values_oder)
   },[selected_node, selected_node_values_oder])
@@ -189,6 +196,7 @@ export default function GraphApp( props ) {
 
   useLayoutEffect(() => {
 
+    
     const elements= arr_elements[ctn_arr]
 
     
@@ -199,22 +207,22 @@ export default function GraphApp( props ) {
         {
           selector: 'edge',
           style: {
-            'width' : '100px',
-            'height' : '100px',
+            'width' : '200px',
+            'height' : '200px',
             
           }
         },
         {
           selector: 'node',
           style: {
-            'width' : '1000px',
-            'height' : '1000px',
+            'width' : '2000px',
+            'height' : '2000px',
             'label': (e) => e.data("label"),
             "text-valign" : "center",
             "text-halign" : "center",
             "color" : "white", 
             "font-weight" : "800",
-            "font-size" : "300px",
+            "font-size" : "500px",
             "background-color" : (e) => sector_opacity_to_rgba(e.data("sector") , 1.0),
             "transition-property": "height, width",
             "transition-duration": "0.3s",
@@ -225,19 +233,19 @@ export default function GraphApp( props ) {
         {
           selector: 'node:selected',
           style: {
-            'width' : '2600px',
-            'height' : '2600px',
+            'width' : '4000px',
+            'height' : '4000px',
             "font-weight" : "800",
-            "font-size" : "800px",
+            "font-size" : "1200px",
           }
         },
         {
           selector: ".hover",
           css: {
-            'width' : '2600px',
-            'height' : '2600px',
+            'width' : '4600px',
+            'height' : '4600px',
             "font-weight" : "800",
-            "font-size" : "800px"
+            "font-size" : "1200px"
           }
         }
         
@@ -283,6 +291,7 @@ export default function GraphApp( props ) {
     return () => {}
   }, [])
 
+
   
   useInterval(function(){
 
@@ -293,8 +302,7 @@ export default function GraphApp( props ) {
         cy.current.json({elements:a})
         ly.current = cy.current.layout(cola_layout)
         ly.current.run()
-        
-        setCtn_arr( a => a +1 )
+        setCtn_arr( x => x +1 )
         update_selected_node(selected_node.id , selected_node_values_oder)
         setUpdate(false)
     
@@ -384,15 +392,15 @@ export default function GraphApp( props ) {
           <FaStop onClick={ e => setPlayButton(true)}/>
           }
           <div className={styles.bar} >
-            <input type="range" min="0" max="745" value={ctn_arr} onChange={update_new_slider_pos} step="1" className={styles.slider}/>
+            <input type="range" min="0" max={arr_elements.length} value={ctn_arr % arr_elements.length} onChange={update_new_slider_pos} step="1" className={styles.slider}/>
             <div className={styles.date} style={{left:"0%"}} >2007</div>
             
-            <div className={styles.dateCriseMarker} style={{left:"11%"}} >
+            <div className={styles.dateCriseMarker} style={{left:"9%"}} >
               <div className={styles.dateCrise1}  >Financial Crisis</div>
             </div>
             <div className={styles.date} style={{left:"45%"}}>2015</div>
             
-            <div className={styles.dateCriseMarker} style={{left:"88%"}} >
+            <div className={styles.dateCriseMarker} style={{left:"84%"}} >
             <div className={styles.dateCrise2}  >COVID-19 pandemic</div>
             </div>
             <div className={styles.date} style={{left:"95%"}}>2022</div>
@@ -412,15 +420,25 @@ export default function GraphApp( props ) {
               <h1 > {selected_node.label}</h1>
 
             </div>
-            <div className={styles.cntInfo}>
-              <p>Sector </p>
-              <p>{selected_node.sector} </p>
+            <div className={styles.cntInfo2}>
+              <div className={styles.cntInfo}>
+                <p>Sector </p>
+                <p>{selected_node.sector} </p>
+              </div>
+              <div className={styles.cntInfo}>
+                <p>Industry </p>
+                <p>{selected_node.industry} </p>
+              </div>
+              <div className={styles.cntInfo}>
+                <p>Full Time Employees </p>
+                <p>{selected_node.fullTimeEmp} </p>
+              </div>
             </div>
 
             <div className={styles.scrollable}>
             <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
               <div className={styles.content2} >
-                <h3>values per asset</h3>
+                <h3>Values per asset</h3>
                 <div className={styles.nodeEdgeValues} >
 
                 <div className={styles.dropdown}>
@@ -465,11 +483,23 @@ export default function GraphApp( props ) {
             <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
               <div className={styles.content2}>
 
-                <h3>values distribution</h3>
+                <h3>Values distribution</h3>
                 <DensityPlot 
                   data={selected_node.edges.map(e => e.value)}
                   dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
                   color={sector_opacity_to_rgba(selected_node.sector , 0.8)}
+                />
+              </div>
+            </div>
+
+            <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
+              <div className={styles.content2}>
+
+                <h3>Sector distribution</h3>
+                <SectorPlot 
+                  data={cy.current.$('#'+selected_node.id).neighborhood().nodes("[sector]").map(e => e.data("sector"))}
+                  map_sect_col={map_sector_to_color}
+                  
                 />
               </div>
             </div>
