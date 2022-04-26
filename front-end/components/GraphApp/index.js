@@ -74,7 +74,7 @@ export default function GraphApp( props ) {
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
 
-    cy.current.$('#'+selected_node.id).unlock();
+    cy.current.nodes().unlock();
     cy.current.$('#'+id).lock();
 
     if(id === "XXX") {
