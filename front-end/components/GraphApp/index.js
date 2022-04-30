@@ -341,6 +341,10 @@ export default function GraphApp( props ) {
     refresh:1
   }
 
+  
+  const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
   const concentric_layout = {
     name: 'concentric',
     fit: true,
@@ -348,13 +352,18 @@ export default function GraphApp( props ) {
     minNodeSpacing: 3,
     centerGraph: false,
     spacingFactor: 2,
+    animate:true,
 
     concentric: function( node ){
       return node.degree()
     },
     levelWidth: function( nodes ){
-      return nodes.maxDegree() / 10;
+      return 1; // TODO change with FCT data
     },
+    stop: async function(){
+      await sleep(1500)
+      setUpdate(true)
+    } ,
   }
 
   const layout_map = {
