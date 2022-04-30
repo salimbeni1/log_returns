@@ -4,8 +4,8 @@ import cola from 'cytoscape-cola';
 
 
 import styles from './GraphApp.module.scss'
-import {useCallback,useLayoutEffect ,  useEffect, useRef , useState} from 'react'
-import { FaPlay , FaStop , FaTablets , FaTree , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
+import {useCallback, useLayoutEffect , useRef , useState} from 'react'
+import { FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 
 import DensityPlot from '../DensityPlot';
 import SectorPlot from '../SectorPlot';
@@ -16,6 +16,8 @@ cytoscape.use( d3Force );
 cytoscape.use( cola );
 
 export default function GraphApp( props ) {
+
+  const graph_layout = props.layout
 
   const cy = useRef(null)
   const ly = useRef(null)
@@ -39,32 +41,12 @@ export default function GraphApp( props ) {
 
   const [selected_node_values_oder, setSelected_node_values_oder] = useState("default") 
 
-
-  const cola_layout = {
-    name: 'cola',
-    infinite: false,
-    fit: false,
-    padding: 30,
-    avoidOverlap: false,
-    animate:true,
-    centerGraph: true,
-    nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return 2000./edge.data("value")},
-    stop: function(){
-      setUpdate(true)
-    } , 
-     
-    maxSimulationTime: 50000, 
-    convergenceThreshold:100000,
-    refresh:1
-  }
-
   const update_new_slider_pos = (event) =>{
     
     setCtn_arr(parseInt(event.target.value))
     const a = arr_elements[ ctn_arr % arr_elements.length]
     cy.current.json({elements:a})
-    ly.current = cy.current.layout(cola_layout)
+    ly.current = cy.current.layout(layout_map[graph_layout])
     ly.current.run()
       
     update_selected_node(selected_node.id , selected_node_values_oder)
@@ -150,7 +132,7 @@ export default function GraphApp( props ) {
     const a = arr_elements[ ctn_arr % arr_elements.length ]
   
     cy.current.json({elements:a})
-    ly.current = cy.current.layout(cola_layout)
+    ly.current = cy.current.layout(layout_map[graph_layout])
     ly.current.run()
     setCtn_arr( a => a + 1 )
     update_selected_node(selected_node.id , selected_node_values_oder)
@@ -158,7 +140,7 @@ export default function GraphApp( props ) {
 
   const re_render_graph = useCallback((g) =>{
     cy.current.json({elements:g[ 0 ]})
-    ly.current = cy.current.layout(cola_layout)
+    ly.current = cy.current.layout(layout_map[graph_layout])
     ly.current.run()
 
     setCtn_arr( 0 )
@@ -250,7 +232,7 @@ export default function GraphApp( props ) {
         }
         
       ],
-      layout: cola_layout,
+      layout: layout_map[graph_layout],
       
       zoom: 0.008,
       pan: { x: 450, y: 260 },
@@ -300,7 +282,7 @@ export default function GraphApp( props ) {
         const a = arr_elements[ ctn_arr % arr_elements.length ]
 
         cy.current.json({elements:a})
-        ly.current = cy.current.layout(cola_layout)
+        ly.current = cy.current.layout(layout_map[graph_layout])
         ly.current.run()
         setCtn_arr( x => x +1 )
         update_selected_node(selected_node.id , selected_node_values_oder)
@@ -339,6 +321,48 @@ export default function GraphApp( props ) {
 
   }
   
+
+  const cola_layout = {
+    name: 'cola',
+    infinite: false,
+    fit: false,
+    padding: 30,
+    avoidOverlap: false,
+    animate:true,
+    centerGraph: true,
+    nodeSpacing: function( node ){ return 1; }, // space around node
+    edgeLength:  function( edge ){ return 2000./edge.data("value")},
+    stop: function(){
+      setUpdate(true)
+    } , 
+     
+    maxSimulationTime: 50000, 
+    convergenceThreshold:100000,
+    refresh:1
+  }
+
+  const concentric_layout = {
+    name: 'concentric',
+    fit: true,
+    clockwise: true,
+    minNodeSpacing: 3,
+    centerGraph: false,
+    spacingFactor: 2,
+
+    concentric: function( node ){
+      return node.degree()
+    },
+    levelWidth: function( nodes ){
+      return nodes.maxDegree() / 10;
+    },
+  }
+
+  const layout_map = {
+    'cola_layout' : cola_layout,
+    'concentric_layout' : concentric_layout 
+  } 
+
+
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
     
@@ -356,18 +380,22 @@ export default function GraphApp( props ) {
         }/>
   
         <div className={styles.layouts}>
-
-          <div className={styles.btn} onClick={ () => props.reload_data('MST')}>
-             <FaTree/>
-              <p>MST</p>
+          <h3> LAYOUT </h3>
+          <div className={styles.btn} onClick={ () => {
+            props.change_layout('cola_layout')
+            props.reload_data("MST")
+          }}>
+             <FaHubspot/>
+              <p>COLA</p>
           </div>
           
-          {/**
-           <div className={styles.btn} onClick={ e => props.reload_data('PHY')} >
-              <FaTablets/>
-              <p>PHY</p>
+          <div className={styles.btn} onClick={ () => { {
+            props.change_layout('concentric_layout')    
+            props.reload_data("MST") //FCT 
+          } }}>
+             <FaFirstOrderAlt/>
+              <p>CONCENTRIC</p>
           </div>
-           */}
           
           
         </div>
@@ -521,15 +549,18 @@ export default function GraphApp( props ) {
   )
 }
 
-
 const propTypes = {
+  layout: String,
   json_data: { },
-  reload_data: Function
+  reload_data: Function,
+  change_layout: Function
 }; 
 
 GraphApp.propTypes = propTypes;
 
 GraphApp.defaultProps = {
+  layout: 'cola_layout',
   json_data: { "all" : { } },
-  reload_data: () => console.log("NOT IMPLEMENTED: assign props to GraphApp")
+  reload_data: () => console.log("NOT IMPLEMENTED: assign props to GraphApp"),
+  change_layout: () => console.log("NOT IMPLEMENTED: assign props to GraphApp")
 };

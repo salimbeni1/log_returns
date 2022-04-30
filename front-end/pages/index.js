@@ -5,6 +5,7 @@ import { LoadingGraphApp } from '../components/LoadingGraphApp'
 export default function Home() {
 
   const [jsonsData, setJsonsData] = useState( { } )
+  const [graphLayout, setGraphLayout] = useState ( 'cola_layout' )
 
   const [dataIsNotLoaded, setDataIsNotLoaded] = useState(true)
   const [firstLoad, setFirstLoad] = useState(true)
@@ -26,18 +27,21 @@ export default function Home() {
     setDataIsNotLoaded(true)
 
     switch (jsonType) {
-      case 'MST':
+      case 'MST': // minimum spanning tree
         fetchData('/data/MST/MST_123.json')
         break
-      case 'PHY':
-        fetchData('/data/PHY/PHY_100.json')
+      case 'FCT': // fully connected with threshold
+        fetchData('/data/FCT/FCT_123.json')
         break
       
       default:
         fetchData('/data/MST/MST_123.json')
     }
   }
-  
-  return  (dataIsNotLoaded) ? <LoadingGraphApp/> :  <GraphApp json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)}/> 
 
+  function changeLayout(layoutType) {
+    setGraphLayout(layoutType)
+  }
+  
+  return  (dataIsNotLoaded) ? <LoadingGraphApp/>  : <GraphApp layout={graphLayout} json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)} change_layout={(layout_) => changeLayout(layout_)}/> 
 }
