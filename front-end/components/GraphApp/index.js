@@ -212,6 +212,15 @@ export default function GraphApp( props ) {
           
         },
         {
+          selector: 'node:active',
+          style: {
+            'overlay-opacity': '0',
+            "background-color" : 'black',
+
+
+          }
+        },
+        {
           selector: 'node:selected',
           style: {
             'width' : '4000px',
@@ -235,6 +244,9 @@ export default function GraphApp( props ) {
       
       zoom: 0.008,
       pan: { x: 450, y: 260 },
+
+      minZoom: 0.0045,
+      maxZoom: 0.022,
 
     });
 
@@ -556,39 +568,54 @@ export default function GraphApp( props ) {
             <p>Click on a node for more information of their correlations alongside interaction networks.</p>
 
               {graph_layout === 'concentric_layout' && 
-              <>
-              <h1> Concentric Layout </h1>
-              <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [123,123,22] , 0.4)}}>
-              <div className={styles.content2} >
-              <h3> ABOUT THIS LAYOUT </h3>
-              <h4> Explanation bla bla bla </h4>
-              </div>
-              </div>
-              <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [123,123,22] , 0.4)}}>
-              <div className={styles.content2} >
-                <h3> ADJUST DISTANCE PARAMETER </h3>
-                <h4> Explanation bla bla bla </h4>
-                <button onClick={ () => {
+
+              <div className={styles.layout_info} >
+                            
+              <h2> Concentric Layout </h2>
+              <p> compute the minimum MST with log return values , render in a physic based animation </p>
+              <p> the more the graph is dense the more the assets are correlated , ex during a crisis </p>
+
+              <h3>options : </h3>
+
+              <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p7") 
                     }}>
-                    <p>0.7</p>
+                    0.7
                 </button>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p8")
                     }}>
-                    <p>0.8</p>
+                    0.8
                 </button>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p9")
                     }}>
-                    <p>0.9</p>
+                    0.9
                 </button>
+
               </div>
-              </div>
-              </>}
+              
+                }
+
+              {graph_layout === 'cola_layout' && 
+              <div className={styles.layout_info} >
+              
+                <h2> MST Layout </h2>
+                <p> compute the minimum MST with log return values , render in a physic based animation </p>
+                <p> the more the graph is dense the more the assets are correlated , ex during a crisis </p>
+                
+                <h3>options : </h3>
+
+                <button > A </button>
+                <button > B </button>
+                <button > C </button>
+               
+              </div>}
+
+
             </>
           }
           

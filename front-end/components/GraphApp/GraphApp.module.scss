@@ -3,7 +3,7 @@
     
     .cyDiv{
         z-index: 1;
-        height: 80%;
+        height: 75vh;
         
 
         border-radius: var(--border-rad) var(--border-rad) 0px 0px;
@@ -94,14 +94,13 @@
                 
                 
             }
-            
-            
 
         }
     }
     .navbar{
 
-        height: 15%;
+        height: 10vh;
+        //overflow: hidden;
     
         display: flex;
         align-items: center;
@@ -195,7 +194,7 @@
 .wrapper{
     position: relative;
     width: 30%;
-    height: 95%;
+    height: 85vh;
     margin: var(--margin-global) var(--margin-global) var(--margin-global) 0px;
     border-radius: var(--border-rad);
 
@@ -205,6 +204,7 @@
         z-index: 2;
         padding: 0px 20px;
         border-radius: var(--border-rad);
+        height: 100%;
 
         .cntInfo{
             display: flex;
@@ -227,7 +227,7 @@
     
     .scrollable{
         margin:10px 0px; 
-        height: 65vh;
+        height: 61.5vh;
         position: relative;
         overflow-y: scroll;
         scrollbar-width: none;
@@ -255,6 +255,26 @@
 
     
     
+}
+
+.layout_info{
+
+    
+    position: absolute;
+    bottom: 15px;
+    left: 0px;
+
+    background-color: rgb(247, 247, 247);
+    border-radius: var(--border-rad);
+    margin: 10px;
+    padding: 15px;
+
+    margin-bottom: 15px;
+
+    button{
+        margin: 2px;
+    }
+
 }
 
 
