@@ -572,6 +572,8 @@ export default function GraphApp( props ) {
               <div className={styles.layout_info} >
              
               <h4> CONCENTRIC LAYOUT </h4>
+
+              <div className={styles.scroll_zone}>
               <p> The concentric layout graph model assigns each node to a circular level around the centre according to its degree. High-degree nodes are positioned in the middle, while low degree nodes are positioned in the outer circles. Namely, the number of edges attached to a node determines where the node is positioned.  </p>
               <h4> INSIGHT </h4>
               <p> When loading data for a given time window, all edges with low correlation are discarded, 
@@ -611,6 +613,7 @@ export default function GraphApp( props ) {
                     }}>
                     <p>0.9</p>
                 </button>
+                </div>
               </div>
               </>}
 
@@ -618,6 +621,8 @@ export default function GraphApp( props ) {
               <div className={styles.layout_info} >
               
                 <h2> MST Layout </h2>
+
+                <div className={styles.scroll_zone}>
                 <p> compute the minimum MST with log return values , render in a physic based animation </p>
                 <p> the more the graph is dense the more the assets are correlated , ex during a crisis </p>
                 
@@ -626,6 +631,8 @@ export default function GraphApp( props ) {
                 <button > A </button>
                 <button > B </button>
                 <button > C </button>
+
+                </div>
                
               </div>}
 

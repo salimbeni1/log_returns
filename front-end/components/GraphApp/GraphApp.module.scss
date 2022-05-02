@@ -271,8 +271,27 @@
 
     margin-bottom: 15px;
 
+    
+
     button{
         margin: 2px;
+    }
+
+    h4{
+        margin: 5px 0px;
+    }
+
+    p{
+        margin: 0px;
+    }
+
+    .scroll_zone::-webkit-scrollbar {
+        display: none;
+    }
+    .scroll_zone{
+        max-height: 45vh;
+        overflow-y: scroll;
+        scrollbar-width: none;
     }
 
 }
