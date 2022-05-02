@@ -9,9 +9,11 @@ import { LoadingGraphApp } from '../LoadingGraphApp';
 export default function ConnectedGraphApp() {
 
   const [jsonsData, setJsonsData] = useState( { } )
-  const [firstLoad, setFirstLoad] = useState(true)
+  const [graphLayout, setGraphLayout] = useState ( 'cola_layout' )
+  const [graphDataType, setGraphDataType] = useState ( 'MST' )
 
   const [dataIsNotLoaded, setDataIsNotLoaded] = useState(true)
+  const [firstLoad, setFirstLoad] = useState(true)
 
   /* LOAD DATA FROM SERVER */
   if (firstLoad) {
@@ -37,10 +39,12 @@ export default function ConnectedGraphApp() {
 
     switch (jsonType) {
       case 'MST':
+        setGraphDataType(jsonType)
         fetchData("http://127.0.0.1:8000/mst")
         break
-      case 'PHY':
-        fetchData("http://127.0.0.1:8000/phy")
+      case 'FCT':
+        setGraphDataType(jsonType)
+        fetchData("http://127.0.0.1:8000/fct")
         break
       
       default:
@@ -50,5 +54,5 @@ export default function ConnectedGraphApp() {
     
   }
 
-  return  (dataIsNotLoaded) ? <LoadingGraphApp/> :  <GraphApp json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)}/> 
+  return  (dataIsNotLoaded) ? <LoadingGraphApp/> :  <GraphApp json_data={jsonsData} data_type={graphDataType} reload_data={(jsonType) => reFetchData(jsonType)}/> 
 }

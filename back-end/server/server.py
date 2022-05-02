@@ -30,12 +30,12 @@ def mst():
     json_data = {"all": dict_list_MST}
     return json_data
 
-@app.get('/phy')
+@app.get('/fct')
 def phy():
     
-    dict_list_PHY = helper.get_rolling_dict(sector_json, df, 4100, 10100, 100, 'PHY') #df.shape[0]
+    dict_list_FCT = helper.get_rolling_dict(sector_json, df, 4100, 10100, 100, 'FCT') #df.shape[0]
     
-    json_data = {"all": dict_list_PHY}
+    json_data = {"all": dict_list_FCT}
     return json_data
     
 if __name__ == '__main__':

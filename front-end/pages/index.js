@@ -6,6 +6,7 @@ export default function Home() {
 
   const [jsonsData, setJsonsData] = useState( { } )
   const [graphLayout, setGraphLayout] = useState ( 'cola_layout' )
+  const [graphDataType, setGraphDataType] = useState ( 'MST' )
 
   const [dataIsNotLoaded, setDataIsNotLoaded] = useState(true)
   const [firstLoad, setFirstLoad] = useState(true)
@@ -28,10 +29,20 @@ export default function Home() {
 
     switch (jsonType) {
       case 'MST': // minimum spanning tree
+        setGraphDataType(jsonType)
         fetchData('/data/MST/MST_123.json')
         break
-      case 'FCT': // fully connected with threshold
-        fetchData('/data/FCT/FCT_123.json')
+      case 'FCT_0p7': // fully connected with threshold 0.7
+        setGraphDataType(jsonType)
+        fetchData('/data/FCT/FCT_0p7.json')
+        break
+      case 'FCT_0p8': // fully connected with threshold 0.8
+        setGraphDataType(jsonType)
+        fetchData('/data/FCT/FCT_0p8.json')
+        break
+      case 'FCT_0p9': // fully connected with threshold 0.9
+        setGraphDataType(jsonType)
+        fetchData('/data/FCT/FCT_0p9.json')
         break
       
       default:
@@ -43,5 +54,5 @@ export default function Home() {
     setGraphLayout(layoutType)
   }
   
-  return  (dataIsNotLoaded) ? <LoadingGraphApp/>  : <GraphApp layout={graphLayout} json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)} change_layout={(layout_) => changeLayout(layout_)}/> 
+  return  (dataIsNotLoaded) ? <LoadingGraphApp/>  : <GraphApp layout={graphLayout} data_type={graphDataType} json_data={jsonsData} reload_data={(jsonType) => reFetchData(jsonType)} change_layout={(layout_) => changeLayout(layout_)}/> 
 }

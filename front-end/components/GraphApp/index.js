@@ -6,6 +6,7 @@ import cola from 'cytoscape-cola';
 import styles from './GraphApp.module.scss'
 import {useCallback, useLayoutEffect , useRef , useState} from 'react'
 import { FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
+import { BiReset } from 'react-icons/bi';
 
 import DensityPlot from '../DensityPlot';
 import SectorPlot from '../SectorPlot';
@@ -18,6 +19,7 @@ cytoscape.use( cola );
 export default function GraphApp( props ) {
 
   const graph_layout = props.layout
+  const data_type = props.data_type
 
   const cy = useRef(null)
   const ly = useRef(null)
@@ -178,7 +180,6 @@ export default function GraphApp( props ) {
 
   useLayoutEffect(() => {
 
-    
     const elements= arr_elements[ctn_arr]
 
     
@@ -188,11 +189,9 @@ export default function GraphApp( props ) {
       style: [
         {
           selector: 'edge',
-          style: {
-            'width' : '200px',
-            'height' : '200px',
-            
-          }
+          style: (graph_layout === 'concentric_layout') ? 
+          {'width' : '20px', 'height' : '20px' } :
+          {'width' : '200px', 'height' : '200px' }
         },
         {
           selector: 'node',
@@ -347,7 +346,7 @@ export default function GraphApp( props ) {
   }
   const concentric_layout = {
     name: 'concentric',
-    fit: true,
+    fit: false,
     clockwise: true,
     minNodeSpacing: 3,
     centerGraph: false,
@@ -358,7 +357,7 @@ export default function GraphApp( props ) {
       return node.degree()
     },
     levelWidth: function( nodes ){
-      return 1; // TODO change with FCT data
+      return nodes.maxDegree() / 8; // TODO change with FCT data
     },
     stop: async function(){
       await sleep(1500)
@@ -389,6 +388,13 @@ export default function GraphApp( props ) {
         }/>
   
         <div className={styles.layouts}>
+        <div className={styles.btn} onClick={ () => {
+            props.change_layout(graph_layout)
+            props.reload_data(data_type)
+          }}>
+             <BiReset/>
+              <p>RESET</p>
+          </div>
           <h3> LAYOUT </h3>
           <div className={styles.btn} onClick={ () => {
             props.change_layout('cola_layout')
@@ -400,7 +406,7 @@ export default function GraphApp( props ) {
           
           <div className={styles.btn} onClick={ () => { {
             props.change_layout('concentric_layout')    
-            props.reload_data("MST") //FCT 
+            props.reload_data("FCT_0p7")
           } }}>
              <FaFirstOrderAlt/>
               <p>CONCENTRIC</p>
@@ -548,6 +554,41 @@ export default function GraphApp( props ) {
             <h1>Clustering Financial Time Series</h1>
             
             <p>Click on a node for more information of their correlations alongside interaction networks.</p>
+
+              {graph_layout === 'concentric_layout' && 
+              <>
+              <h1> Concentric Layout </h1>
+              <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [123,123,22] , 0.4)}}>
+              <div className={styles.content2} >
+              <h3> ABOUT THIS LAYOUT </h3>
+              <h4> Explanation bla bla bla </h4>
+              </div>
+              </div>
+              <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [123,123,22] , 0.4)}}>
+              <div className={styles.content2} >
+                <h3> ADJUST DISTANCE PARAMETER </h3>
+                <h4> Explanation bla bla bla </h4>
+                <button onClick={ () => {
+                      props.change_layout('concentric_layout')    
+                      props.reload_data("FCT_0p7") 
+                    }}>
+                    <p>0.7</p>
+                </button>
+                <button onClick={ () => {
+                      props.change_layout('concentric_layout')    
+                      props.reload_data("FCT_0p8")
+                    }}>
+                    <p>0.8</p>
+                </button>
+                <button onClick={ () => {
+                      props.change_layout('concentric_layout')    
+                      props.reload_data("FCT_0p9")
+                    }}>
+                    <p>0.9</p>
+                </button>
+              </div>
+              </div>
+              </>}
             </>
           }
           
@@ -560,6 +601,7 @@ export default function GraphApp( props ) {
 
 const propTypes = {
   layout: String,
+  data_type: String,
   json_data: { },
   reload_data: Function,
   change_layout: Function
@@ -570,6 +612,7 @@ GraphApp.propTypes = propTypes;
 GraphApp.defaultProps = {
   layout: 'cola_layout',
   json_data: { "all" : { } },
+  data_type: 'MST',
   reload_data: () => console.log("NOT IMPLEMENTED: assign props to GraphApp"),
   change_layout: () => console.log("NOT IMPLEMENTED: assign props to GraphApp")
 };
