@@ -32,6 +32,14 @@ export default function Home() {
         setGraphDataType(jsonType)
         fetchData('/data/MST/MST_123.json')
         break
+      case 'FCT_0p5': // fully connected with threshold 0.5
+        setGraphDataType(jsonType)
+        fetchData('/data/FCT/FCT_0p5.json')
+        break
+      case 'FCT_0p6': // fully connected with threshold 0.6
+        setGraphDataType(jsonType)
+        fetchData('/data/FCT/FCT_0p6.json')
+        break
       case 'FCT_0p7': // fully connected with threshold 0.7
         setGraphDataType(jsonType)
         fetchData('/data/FCT/FCT_0p7.json')
