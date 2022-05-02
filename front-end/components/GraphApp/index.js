@@ -575,7 +575,6 @@ export default function GraphApp( props ) {
               <p> The concentric layout graph model assigns each node to a circular level around the centre according to its degree. High-degree nodes are positioned in the middle, while low degree nodes are positioned in the outer circles. Namely, the number of edges attached to a node determines where the node is positioned.  </p>
               <h4> INSIGHT </h4>
               <p> When loading data for a given time window, all edges with low correlation are discarded, the threshold with which these edges are discarded can be selected here-under in terms of maximum distance (high correlation => low distance). Thus in the periods where the stock market is generally highly correlated, all nodes tend to concentrate in the inner circles. In contrast, when the market is generally less correlated, nodes are mainly positioned in the outer circles of the concentric layout.  </p>
-            
                 <h4> ADJUST DISTANCE PARAMETER </h4>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
