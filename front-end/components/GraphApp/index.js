@@ -336,6 +336,7 @@ export default function GraphApp( props ) {
   const cola_layout = {
     name: 'cola',
     infinite: false,
+    randomize: false,
     fit: false,
     padding: 30,
     avoidOverlap: false,
@@ -410,7 +411,7 @@ export default function GraphApp( props ) {
           <h3> LAYOUT </h3>
           <div className={styles.btn} onClick={ () => {
             props.change_layout('cola_layout')
-            props.reload_data("MST")
+            props.reload_data("MST_123")
           }}>
              <FaHubspot/>
               <p>COLA</p>
@@ -623,14 +624,39 @@ export default function GraphApp( props ) {
                 <h2> MST Layout </h2>
 
                 <div className={styles.scroll_zone}>
-                <p> compute the minimum MST with log return values , render in a physic based animation </p>
+                <p> Compute the minimum MST with log return values , render in a physic based animation </p>
                 <p> the more the graph is dense the more the assets are correlated , ex during a crisis </p>
                 
+                <p> rounded standard bla bla</p>
                 <h3>options : </h3>
 
-                <button > A </button>
-                <button > B </button>
-                <button > C </button>
+                <button onClick={ () => {
+                      props.change_layout('cola_layout')
+                      props.reload_data("MST_123")
+                    }}>
+                    <p> standard </p>
+                </button>
+
+                <button onClick={ () => {
+                      props.change_layout('cola_layout')
+                      props.reload_data("MST_p1")
+                    }}>
+                    <p>.0</p>
+                </button>
+                
+                <button onClick={ () => {
+                      props.change_layout('cola_layout')
+                      props.reload_data("MST_p2")
+                    }}>
+                    <p>.00</p>
+                </button>
+
+                <button onClick={ () => {
+                      props.change_layout('cola_layout')
+                      props.reload_data("MST_p3")
+                    }}>
+                    <p>.000</p>
+                </button>
 
                 </div>
                

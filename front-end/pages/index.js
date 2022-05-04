@@ -28,10 +28,26 @@ export default function Home() {
     setDataIsNotLoaded(true)
 
     switch (jsonType) {
-      case 'MST': // minimum spanning tree
+      case 'MST_123': // minimum spanning tree
         setGraphDataType(jsonType)
         fetchData('/data/MST/MST_123.json')
         break
+
+      case 'MST_p1': // minimum spanning tree
+        setGraphDataType(jsonType)
+        fetchData('/data/MST/MST_round_p1.json')
+        break
+
+      case 'MST_p2': // minimum spanning tree
+        setGraphDataType(jsonType)
+        fetchData('/data/MST/MST_round_p2.json')
+        break
+
+      case 'MST_p3': // minimum spanning tree
+        setGraphDataType(jsonType)
+        fetchData('/data/MST/MST_round_p3.json')
+        break
+
       case 'FCT_0p5': // fully connected with threshold 0.5
         setGraphDataType(jsonType)
         fetchData('/data/FCT/FCT_0p5.json')

@@ -28,7 +28,7 @@ export default function SectorPlot(props) {
         legend: { position: "none" },
         orientation: "vertical",
         backgroundColor: 'transparent',
-        vAxis:{ textPosition: 'none'}
+        vAxis:{ textStyle: {fontSize: 11}}
         
       };
       var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
