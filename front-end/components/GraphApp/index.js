@@ -242,11 +242,11 @@ export default function GraphApp( props ) {
       ],
       layout: layout_map[graph_layout],
       
-      zoom: 0.008,
+      zoom: 0.005,
       pan: { x: 450, y: 260 },
 
-      minZoom: 0.0045,
-      maxZoom: 0.022,
+      minZoom: 0.0015,
+      maxZoom: 0.052,
 
     });
 
@@ -287,6 +287,8 @@ export default function GraphApp( props ) {
 
   
   useInterval(function(){
+
+        
 
         if (update) {
 
@@ -343,13 +345,13 @@ export default function GraphApp( props ) {
     animate:true,
     centerGraph: true,
     nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return 2000./edge.data("value")},
+    edgeLength:  function( edge ){ return 4000./edge.data("value")},
     stop: function(){
       setUpdate(true)
     } , 
      
     maxSimulationTime: 50000, 
-    convergenceThreshold:100000,
+    convergenceThreshold:1000,
     refresh:1
   }
 
@@ -624,10 +626,10 @@ export default function GraphApp( props ) {
                 <h2> MST Layout </h2>
 
                 <div className={styles.scroll_zone}>
-                <p> Compute the minimum MST with log return values , render in a physic based animation </p>
-                <p> the more the graph is dense the more the assets are correlated , ex during a crisis </p>
+                <p> Compute the minimum MST with log return values , render in a physic based animation. </p>
+                <p> the more the graph is dense the more the assets are correlated , ex during a crisis. </p>
                 
-                <p> rounded standard bla bla</p>
+                <p> You can change the edge value rounding (number of bins) for create the mst.</p>
                 <h3>options : </h3>
 
                 <button onClick={ () => {
@@ -641,21 +643,21 @@ export default function GraphApp( props ) {
                       props.change_layout('cola_layout')
                       props.reload_data("MST_p1")
                     }}>
-                    <p>.0</p>
+                    <p>5</p>
                 </button>
                 
                 <button onClick={ () => {
                       props.change_layout('cola_layout')
                       props.reload_data("MST_p2")
                     }}>
-                    <p>.00</p>
+                    <p>10</p>
                 </button>
 
                 <button onClick={ () => {
                       props.change_layout('cola_layout')
                       props.reload_data("MST_p3")
                     }}>
-                    <p>.000</p>
+                    <p>15</p>
                 </button>
 
                 </div>
