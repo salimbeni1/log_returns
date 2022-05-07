@@ -435,7 +435,7 @@ export default function GraphApp( props ) {
 
       <div className={styles.dropdown}>
       { sideBarIsHidden && <BsLayoutSidebarInsetReverse onClick={ () => {
-              document.getElementsByClassName(styles.wrapper)[0].style['visibility'] = "visible"
+              document.getElementsByClassName(styles.wrapper)[0].style['display'] = "unset"
               document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "70%"
               setSideBarIsHidden(false)
             }}> 
@@ -667,7 +667,7 @@ export default function GraphApp( props ) {
              { !sideBarIsHidden && 
               <div>
               <FaAngleRight onClick={ () => {
-               document.getElementsByClassName(styles.wrapper)[0].style['visibility'] = "collapse"
+               document.getElementsByClassName(styles.wrapper)[0].style['display'] = "none"
                document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "100%"
                setSideBarIsHidden(true)
              }}> 
