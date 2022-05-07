@@ -5,8 +5,9 @@ import cola from 'cytoscape-cola';
 
 import styles from './GraphApp.module.scss'
 import {useCallback, useLayoutEffect , useRef , useState} from 'react'
-import { FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
+import { FaAngleRight, FaAngleLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 import { BiReset } from 'react-icons/bi';
+import { BsLayoutSidebarInsetReverse, BsReverseLayoutSidebarReverse } from 'react-icons/bs';
 
 import DensityPlot from '../DensityPlot';
 import SectorPlot from '../SectorPlot';
@@ -32,6 +33,8 @@ export default function GraphApp( props ) {
   const [delay, setDelay] = useState(1)
   const [update, setUpdate] = useState(false) 
 
+  const [sideBarIsHidden, setSideBarIsHidden] = useState(false)
+
   const [arr_elements, setArr_elements] = useState(props.json_data['all'])
 
   const [selected_node, setSelected_node] = useState({
@@ -43,9 +46,47 @@ export default function GraphApp( props ) {
 
   const [selected_node_values_oder, setSelected_node_values_oder] = useState("default") 
 
-  const update_new_slider_pos = (event) =>{
+  const DAY_INTERVAL = 1
+  const WEEK_INTERVAL = 5
+  const MONTH_INTERVAL = 22
+  const YEAR_INTERVAL = 260
+
+  const update_new_slider_pos = (step) =>{
     
-    setCtn_arr(parseInt(event.target.value))
+    switch (step) {
+
+      case "m_DAY": 
+        setCtn_arr(parseInt(ctn_arr - DAY_INTERVAL))
+        break
+      case "p_DAY": 
+        setCtn_arr(parseInt(ctn_arr + DAY_INTERVAL))
+        break
+
+      case "m_WEEK":
+        setCtn_arr(parseInt(ctn_arr - WEEK_INTERVAL))
+        break
+      case "p_WEEK":
+          setCtn_arr(parseInt(ctn_arr + WEEK_INTERVAL))
+          break
+
+      case "m_MONTH":
+        setCtn_arr(parseInt(ctn_arr - MONTH_INTERVAL))
+        break
+      case "p_MONTH":
+        setCtn_arr(parseInt(ctn_arr + MONTH_INTERVAL))
+        break
+
+      case "m_YEAR":
+        setCtn_arr(parseInt(ctn_arr - YEAR_INTERVAL))
+        break
+      case "p_YEAR":
+          setCtn_arr(parseInt(ctn_arr + YEAR_INTERVAL))
+          break
+
+      default :
+        setCtn_arr(parseInt(ctn_arr))
+    }
+
     const a = arr_elements[ ctn_arr % arr_elements.length]
     cy.current.json({elements:a})
     ly.current = cy.current.layout(layout_map[graph_layout])
@@ -393,6 +434,13 @@ export default function GraphApp( props ) {
       <div id="cy" className={styles.cyDiv}>
 
       <div className={styles.dropdown}>
+      { sideBarIsHidden && <BsLayoutSidebarInsetReverse onClick={ () => {
+              document.getElementsByClassName(styles.wrapper)[0].style['visibility'] = "visible"
+              document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "70%"
+              setSideBarIsHidden(false)
+            }}> 
+                   SIDEBAR
+            </BsLayoutSidebarInsetReverse>}
         <FaList onClick={() => {
        
           var list = document.getElementsByClassName(styles.layouts)
@@ -403,14 +451,65 @@ export default function GraphApp( props ) {
         }/>
   
         <div className={styles.layouts}>
-        <div className={styles.btn} onClick={ () => {
+     
+          <h4> DATES </h4>
+          <div className={styles.div_style_horizontal}> 
+          <h5 style={{width : "59px"}}> DAY</h5>
+          <div className={styles.div_style_horizontal}>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_DAY")}>
+             <FaAngleLeft/>
+             
+          </div>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_DAY")}>
+             <FaAngleRight/>
+          </div>
+          </div>
+          </div>
+          
+          <div className={styles.div_style_horizontal}>
+          <h5 style={{width : "59px"}}> WEEK </h5> 
+          <div className={styles.div_style_horizontal}>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_WEEK")}>
+             <FaAngleLeft/>
+             
+          </div>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_WEEK")}>
+             <FaAngleRight/>
+          </div>
+          </div>
+          </div>
+          <div className={styles.div_style_horizontal}> 
+          <h5 style={{width : "59px"}}> MONTH </h5>
+          <div className={styles.div_style_horizontal}>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_MONTH")}>
+             <FaAngleDoubleLeft/>
+             
+          </div>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_MONTH")}>
+             <FaAngleDoubleRight/>
+          </div>
+          </div>
+          </div>
+          <div className={styles.div_style_horizontal}> 
+          <h5 style={{width : "59px"}}> YEAR </h5>
+          <div className={styles.div_style_horizontal}> 
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_YEAR")}>
+             <FaAngleDoubleLeft/>
+             
+          </div>
+          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_YEAR")}>
+             <FaAngleDoubleRight/>
+          </div>
+          </div>
+          </div>
+          <div className={styles.btn} onClick={ () => {
             props.change_layout(graph_layout)
             props.reload_data(data_type)
           }}>
              <BiReset/>
               <p>RESET</p>
           </div>
-          <h3> LAYOUT </h3>
+          <h4> LAYOUT </h4>
           <div className={styles.btn} onClick={ () => {
             props.change_layout('cola_layout')
             props.reload_data("MST_123")
@@ -426,7 +525,6 @@ export default function GraphApp( props ) {
              <FaFirstOrderAlt/>
               <p>CONCENTRIC</p>
           </div>
-          
           
         </div>
       </div>
@@ -450,7 +548,7 @@ export default function GraphApp( props ) {
           <FaStop onClick={ e => setPlayButton(true)}/>
           }
           <div className={styles.bar} >
-            <input type="range" min="0" max={arr_elements.length} value={ctn_arr % arr_elements.length} onChange={update_new_slider_pos} step="1" className={styles.slider}/>
+            <input type="range" min="0" max={arr_elements.length} value={ctn_arr % arr_elements.length} step="1" className={styles.slider}/>
             <div className={styles.date} style={{left:"0%"}} >2007</div>
             
             <div className={styles.dateCriseMarker} style={{left:"9%"}} >
@@ -566,6 +664,17 @@ export default function GraphApp( props ) {
             
             </> : 
             <>
+             { !sideBarIsHidden && 
+              <div>
+              <FaAngleRight onClick={ () => {
+               document.getElementsByClassName(styles.wrapper)[0].style['visibility'] = "collapse"
+               document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "100%"
+               setSideBarIsHidden(true)
+             }}> 
+             </FaAngleRight>
+              </div>
+             }
+
             <h1>Clustering Financial Time Series</h1>
             
             <p>Click on a node for more information of their correlations alongside interaction networks.</p>

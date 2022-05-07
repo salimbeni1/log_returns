@@ -65,6 +65,18 @@
                 background-color: var(--bg-color-0);
                 border-radius: var(--border-rad);
         
+                .div_style_horizontal {
+                    height: inherit;
+                    width: inherit;
+                    position: relative;
+                    display:-webkit-inline-box;
+                    float:left;
+                    justify-content: space-around;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    flex-direction: column;
+                  }
+
                 .btn{
         
                     display: flex;
@@ -197,6 +209,7 @@
     height: 85vh;
     margin: var(--margin-global) var(--margin-global) var(--margin-global) 0px;
     border-radius: var(--border-rad);
+    visibility: visible;
 
 
     .content{
