@@ -5,7 +5,7 @@ import cola from 'cytoscape-cola';
 
 import styles from './GraphApp.module.scss'
 import {useCallback, useLayoutEffect , useRef , useState} from 'react'
-import { FaAngleRight, FaExpandArrowsAlt, FaAngleLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
+import { FaAngleRight,FaStopwatch ,  FaExpandArrowsAlt, FaCompressArrowsAlt , FaRegCalendarAlt , FaAngleLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 import { BiReset } from 'react-icons/bi';
 import { BsLayoutSidebarInsetReverse } from 'react-icons/bs';
 
@@ -87,6 +87,8 @@ export default function GraphApp( props ) {
         setCtn_arr(parseInt(ctn_arr))
     }
 
+
+
     const a = arr_elements[ ctn_arr % arr_elements.length]
     cy.current.json({elements:a})
     ly.current = cy.current.layout(layout_map[graph_layout])
@@ -94,6 +96,39 @@ export default function GraphApp( props ) {
       
     update_selected_node(selected_node.id , selected_node_values_oder)
 
+  }
+
+  const getDateForm = () => {
+    return <>
+    
+    <div className={styles.flex}>
+      <h4> DATES </h4>
+      <BiReset onClick={ () => {
+        props.change_layout(graph_layout)
+        props.reload_data(data_type)
+      }}/>
+    </div>
+    
+
+    <div className={styles.grid}>
+      <h5 > DAY</h5>
+      <FaAngleLeft onClick={ () => update_new_slider_pos("m_DAY")}/>
+      <FaAngleRight onClick={ () => update_new_slider_pos("p_DAY")}/>
+      
+      <h5> WEEK </h5> 
+      <FaAngleLeft onClick={ () => update_new_slider_pos("m_WEEK")}/>
+      <FaAngleRight onClick={ () => update_new_slider_pos("p_WEEK")}/>
+
+      <h5> MONTH </h5>
+      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_MONTH")}/>
+      <FaAngleDoubleRight  onClick={ () => update_new_slider_pos("p_MONTH")}/>
+
+      <h5 > YEAR </h5>
+      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_YEAR")}/>
+      <FaAngleDoubleRight onClick={ () => update_new_slider_pos("p_YEAR")}/>
+    </div>
+
+    </>
   }
 
   // update selected node state and fetch node edge values
@@ -349,9 +384,7 @@ export default function GraphApp( props ) {
   }, playButton ? null:  delay)
 
   const clean_dropdown = (event, elem, style) => {
-
     if (typeof elem != 'undefined'){
-    
       if (!elem.contains(event.target)) {
         var list = document.getElementsByClassName(style)
         for (var i = 0; i < list.length; i++) {
@@ -360,6 +393,7 @@ export default function GraphApp( props ) {
       }
     }
   }
+
   const clean_dropdown_simple = (style) => {
     var list = document.getElementsByClassName(style)
     for (var i = 0; i < list.length; i++) {
@@ -370,8 +404,9 @@ export default function GraphApp( props ) {
   // Close the dropdown if the user clicks outside of it
   window.onclick = function(event) {
 
-    clean_dropdown(event,document.getElementsByClassName(styles.dropdown)[0],styles.layouts)
+    clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[0],styles.layouts)
     clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[1],styles.orderBar)
+    clean_dropdown(event, document.getElementsByClassName(styles.dateForm)[0] ,styles.dateform_window) 
 
   }
   
@@ -430,133 +465,79 @@ export default function GraphApp( props ) {
   return (
     <div style={{width:"100%",height:"100%" , display:'flex'}}>
     
+
+
       <div className={styles.cyContainer}>
-      <div id="cy" className={styles.cyDiv}>
+        <div id="cy" className={styles.cyDiv}>
 
-      <div className={styles.dropdown}>
-      { !sideBarIsHidden && 
-              <div>
-              <FaExpandArrowsAlt onClick={ () => {
-               document.getElementsByClassName(styles.wrapper)[0].style['display'] = "none"
-               document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "100%"
-               setSideBarIsHidden(true)
-             }}> 
-             </FaExpandArrowsAlt>
-              </div>
-             }
-      { sideBarIsHidden && <BsLayoutSidebarInsetReverse onClick={ () => {
-              document.getElementsByClassName(styles.wrapper)[0].style['display'] = "unset"
-              document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "70%"
-              setSideBarIsHidden(false)
-            }}> 
-                   SIDEBAR
-            </BsLayoutSidebarInsetReverse>}
-        <FaList onClick={() => {
-       
-          var list = document.getElementsByClassName(styles.layouts)
-          for (var i = 0; i < list.length; i++) {
-            list[i].style['display'] = "block"
-          } 
-        }
-        }/>
-  
-        <div className={styles.layouts}>
-     
-          <h4> DATES </h4>
-          <div className={styles.div_style_horizontal}> 
-          <h5 style={{width : "59px"}}> DAY</h5>
-          <div className={styles.div_style_horizontal}>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_DAY")}>
-             <FaAngleLeft/>
-             
-          </div>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_DAY")}>
-             <FaAngleRight/>
-          </div>
-          </div>
-          </div>
-          
-          <div className={styles.div_style_horizontal}>
-          <h5 style={{width : "59px"}}> WEEK </h5> 
-          <div className={styles.div_style_horizontal}>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_WEEK")}>
-             <FaAngleLeft/>
-             
-          </div>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_WEEK")}>
-             <FaAngleRight/>
-          </div>
-          </div>
-          </div>
-          <div className={styles.div_style_horizontal}> 
-          <h5 style={{width : "59px"}}> MONTH </h5>
-          <div className={styles.div_style_horizontal}>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_MONTH")}>
-             <FaAngleDoubleLeft/>
-             
-          </div>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_MONTH")}>
-             <FaAngleDoubleRight/>
-          </div>
-          </div>
-          </div>
-          <div className={styles.div_style_horizontal}> 
-          <h5 style={{width : "59px"}}> YEAR </h5>
-          <div className={styles.div_style_horizontal}> 
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("m_YEAR")}>
-             <FaAngleDoubleLeft/>
-             
-          </div>
-          <div className={styles.btn} onClick={ () => update_new_slider_pos("p_YEAR")}>
-             <FaAngleDoubleRight/>
-          </div>
-          </div>
-          </div>
-          <div className={styles.btn} onClick={ () => {
-            props.change_layout(graph_layout)
-            props.reload_data(data_type)
-          }}>
-             <BiReset/>
-              <p>RESET</p>
-          </div>
-          <h4> LAYOUT </h4>
-          <div className={styles.btn} onClick={ () => {
-            props.change_layout('cola_layout')
-            props.reload_data("MST_123")
-          }}>
-             <FaHubspot/>
-              <p>COLA</p>
-          </div>
-          
-          <div className={styles.btn} onClick={ () => { {
-            props.change_layout('concentric_layout')    
-            props.reload_data("FCT_0p7")
-          } }}>
-             <FaFirstOrderAlt/>
-              <p>CONCENTRIC</p>
-          </div>
-          
-        </div>
-      </div>
+          <div className={styles.dropdown}>
 
+            <h2> 16/07/1998</h2>
 
+            <FaList onClick={() => {
+                for ( const e of document.getElementsByClassName(styles.layouts) ) { e.style['display'] = "block" }
+              }}/>
+
+            { !sideBarIsHidden && <FaExpandArrowsAlt onClick={ () => {
+                    document.getElementsByClassName(styles.wrapper)[0].style['display'] = "none"
+                    document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "100%"
+                    setSideBarIsHidden(true) }}/> }
+            { sideBarIsHidden && <FaCompressArrowsAlt onClick={ () => {
+                    document.getElementsByClassName(styles.wrapper)[0].style['display'] = "unset"
+                    document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "70%"
+                    setSideBarIsHidden(false) }}/> }
+                
+            
       
-        <div className={styles.legend}>
-          {Object.keys(map_sector_to_color).map( (el , idx) => {
-          return <div key={idx} className={styles.lgditm}>
-             <div className={styles.color} style={{backgroundColor:sector_opacity_to_rgba(el , 1.0)}}></div> 
-             {el}
-            </div> })}
+            <div className={styles.layouts}>
+              <h4> LAYOUT </h4>
+              <div className={styles.btn} onClick={ () => {
+                props.change_layout('cola_layout')
+                props.reload_data("MST_123")
+              }}>
+                <FaHubspot/>
+                  <p>COLA</p>
+              </div>
+              
+              <div className={styles.btn} onClick={ () => { {
+                props.change_layout('concentric_layout')    
+                props.reload_data("FCT_0p7")
+              } }}>
+                <FaFirstOrderAlt/>
+                  <p>CONCENTRIC</p>
+              </div>
+              
+            </div>
           </div>
 
-        
+          <div className={styles.legend}>
+            {Object.keys(map_sector_to_color).map( (el , idx) => {
+            return <div key={idx} className={styles.lgditm}>
+                <div className={styles.color} style={{backgroundColor:sector_opacity_to_rgba(el , 1.0)}}></div> 
+                {el}
+              </div> })}
+          </div>
 
-      </div>
-      <div className={styles.navbar}>
+        </div>
+
+
+
+        <div className={styles.navbar}>
+
+          <div className={styles.dateForm}>
+            <FaStopwatch onClick={() => { 
+              for ( const e of document.getElementsByClassName(styles.dateform_window) ) { e.style['display'] = "grid" }
+              }} />
+            <div className={styles.dateform_window}>
+              {getDateForm()}
+            </div>
+          </div>
+
           {playButton ? 
-          <FaPlay onClick={() => setPlayButton(false)}/>:
+          <FaPlay onClick={ e => setPlayButton(false)}/>:
           <FaStop onClick={ e => setPlayButton(true)}/>
           }
+
           <div className={styles.bar} >
             <input type="range" min="0" max={arr_elements.length} value={ctn_arr % arr_elements.length} step="1" className={styles.slider}/>
             <div className={styles.date} style={{left:"0%"}} >2007</div>
@@ -571,13 +552,20 @@ export default function GraphApp( props ) {
             </div>
             <div className={styles.date} style={{left:"95%"}}>2022</div>
           </div>
+
+          
+        </div>
+
       </div>
-      </div>
+
+
+
+
+
+
 
       <div className={styles.wrapper} style={{backgroundColor: sector_opacity_to_rgba(selected_node.sector , .3),}}>
-
         <div className={styles.content} >
-
 
           {selected_node.label !== "SELECT A NODE" ?<>
 
@@ -740,35 +728,43 @@ export default function GraphApp( props ) {
                 <p> the more the graph is dense the more the assets are correlated , ex during a crisis. </p>
                 
                 <p> You can change the edge value rounding (number of bins) for create the mst.</p>
-                <h3>options : </h3>
-
-                <button onClick={ () => {
-                      props.change_layout('cola_layout')
-                      props.reload_data("MST_123")
-                    }}>
-                    <p> standard </p>
-                </button>
-
-                <button onClick={ () => {
-                      props.change_layout('cola_layout')
-                      props.reload_data("MST_p1")
-                    }}>
-                    <p>5</p>
-                </button>
                 
-                <button onClick={ () => {
-                      props.change_layout('cola_layout')
-                      props.reload_data("MST_p2")
-                    }}>
-                    <p>10</p>
-                </button>
+                <div className={styles.options_1} >
+                   <h3>options : </h3>
+                   
+                   <button onClick={ () => {
+                          props.change_layout('cola_layout')
+                          props.reload_data("MST_123")
+                        }}>
+                        standard
+                    </button>
 
-                <button onClick={ () => {
-                      props.change_layout('cola_layout')
-                      props.reload_data("MST_p3")
-                    }}>
-                    <p>15</p>
-                </button>
+                    <button onClick={ () => {
+                          props.change_layout('cola_layout')
+                          props.reload_data("MST_p1")
+                        }}>
+                        5
+                    </button>
+                    
+                    <button onClick={ () => {
+                            props.change_layout('cola_layout')
+                            props.reload_data("MST_p2")
+                          }}>
+                          10
+                    </button>
+
+                    <button onClick={ () => {
+                            props.change_layout('cola_layout')
+                            props.reload_data("MST_p3")
+                          }}>
+                          15
+                    </button>
+                
+                </div>
+               
+
+                
+                
 
                 </div>
                
