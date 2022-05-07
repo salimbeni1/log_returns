@@ -5,9 +5,9 @@ import cola from 'cytoscape-cola';
 
 import styles from './GraphApp.module.scss'
 import {useCallback, useLayoutEffect , useRef , useState} from 'react'
-import { FaAngleRight, FaAngleLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
+import { FaAngleRight, FaExpandArrowsAlt, FaAngleLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 import { BiReset } from 'react-icons/bi';
-import { BsLayoutSidebarInsetReverse, BsReverseLayoutSidebarReverse } from 'react-icons/bs';
+import { BsLayoutSidebarInsetReverse } from 'react-icons/bs';
 
 import DensityPlot from '../DensityPlot';
 import SectorPlot from '../SectorPlot';
@@ -434,6 +434,16 @@ export default function GraphApp( props ) {
       <div id="cy" className={styles.cyDiv}>
 
       <div className={styles.dropdown}>
+      { !sideBarIsHidden && 
+              <div>
+              <FaExpandArrowsAlt onClick={ () => {
+               document.getElementsByClassName(styles.wrapper)[0].style['display'] = "none"
+               document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "100%"
+               setSideBarIsHidden(true)
+             }}> 
+             </FaExpandArrowsAlt>
+              </div>
+             }
       { sideBarIsHidden && <BsLayoutSidebarInsetReverse onClick={ () => {
               document.getElementsByClassName(styles.wrapper)[0].style['display'] = "unset"
               document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "70%"
@@ -568,6 +578,7 @@ export default function GraphApp( props ) {
 
         <div className={styles.content} >
 
+
           {selected_node.label !== "SELECT A NODE" ?<>
 
             <div className={styles.cntInfo}>
@@ -664,16 +675,6 @@ export default function GraphApp( props ) {
             
             </> : 
             <>
-             { !sideBarIsHidden && 
-              <div>
-              <FaAngleRight onClick={ () => {
-               document.getElementsByClassName(styles.wrapper)[0].style['display'] = "none"
-               document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "100%"
-               setSideBarIsHidden(true)
-             }}> 
-             </FaAngleRight>
-              </div>
-             }
 
             <h1>Clustering Financial Time Series</h1>
             
