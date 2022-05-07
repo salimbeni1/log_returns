@@ -205,26 +205,6 @@ export default function GraphApp( props ) {
 
   }
 
-  // load next graph layout and update related states
-  const next_graph_iteration = useCallback(() =>{
-    const a = arr_elements[ ctn_arr % arr_elements.length ]
-  
-    cy.current.json({elements:a})
-    ly.current = cy.current.layout(layout_map[graph_layout])
-    ly.current.run()
-    setCtn_arr( a => a + 1 )
-    update_selected_node(selected_node.id , selected_node_values_oder)
-  },[cy.current,ctn_arr, selected_node,arr_elements,selected_node_values_oder])
-
-  const re_render_graph = useCallback((g) =>{
-    cy.current.json({elements:g[ 0 ]})
-    ly.current = cy.current.layout(layout_map[graph_layout])
-    ly.current.run()
-
-    setCtn_arr( 0 )
-    update_selected_node(selected_node.id , selected_node_values_oder)
-  },[selected_node, selected_node_values_oder])
-
   const map_sector_to_color = {
     "Industrials"            : [255, 102, 153], 
     "Technology"             : [146, 86 , 86 ],
@@ -266,8 +246,18 @@ export default function GraphApp( props ) {
         {
           selector: 'edge',
           style: (graph_layout === 'concentric_layout') ? 
-          {'width' : '20px', 'height' : '20px' } :
-          {'width' : '200px', 'height' : '200px' }
+          {'width' : '20px',
+           'height' : '20px',
+           "line-color" : e => {
+            const factor = e.data('timelife')?e.data('timelife'):0
+            return factor >= 1 ? 'black' : 'red'}
+            }:
+          {'width' : '200px',
+           'height' : '200px',
+           "line-color" : e => {
+             const factor = e.data('timelife')?e.data('timelife'):0
+             return factor >= 1 ? 'black' : 'red'}
+             }
         },
         {
           selector: 'node',
@@ -364,11 +354,20 @@ export default function GraphApp( props ) {
   
   useInterval(function(){
 
-        
-
         if (update) {
 
+        
+        const prev_a = arr_elements[ (ctn_arr-1) % arr_elements.length ]
         const a = arr_elements[ ctn_arr % arr_elements.length ]
+
+        // keep track of new edges
+        for ( const e of a.edges){
+          const previous_e_1 = cy.current.$('edge[source = "'+e.data['source']+'"][target = "'+e.data['target']+'"]')
+          const previous_e_2 = cy.current.$('edge[source = "'+e.data['target']+'"][target = "'+e.data['source']+'"]')
+          const previous_e_t = previous_e_1? previous_e_1: (previous_e_2? previous_e_2: undefined )
+          const previous_e = previous_e_t[0]? previous_e_t[0] : undefined
+          e.data['timelife'] = previous_e? (previous_e.data['timelife']?previous_e.data['timelife'] : 0 ) + 1 : 0
+        }
 
         cy.current.json({elements:a})
         ly.current = cy.current.layout(layout_map[graph_layout])
@@ -688,31 +687,31 @@ export default function GraphApp( props ) {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p5") 
                     }}>
-                    <p>0.5</p>
+                    0.5
                 </button>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p6") 
                     }}>
-                    <p>0.6</p>
+                    0.6
                 </button>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p7") 
                     }}>
-                    <p>0.7</p>
+                    0.7
                 </button>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p8")
                     }}>
-                    <p>0.8</p>
+                    0.8
                 </button>
                 <button onClick={ () => {
                       props.change_layout('concentric_layout')    
                       props.reload_data("FCT_0p9")
                     }}>
-                    <p>0.9</p>
+                    0.9
                 </button>
                 </div>
               </div>
