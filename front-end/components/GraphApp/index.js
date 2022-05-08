@@ -247,16 +247,27 @@ export default function GraphApp( props ) {
           selector: 'edge',
           style: (graph_layout === 'concentric_layout') ? 
           {'width' : '20px',
-           'height' : '20px',
            "line-color" : e => {
             const factor = e.data('timelife')?e.data('timelife'):0
             return factor >= 1 ? 'black' : 'red'}
             }:
-          {'width' : '200px',
-           'height' : '200px',
+          {'width' : '500px',
            "line-color" : e => {
-             const factor = e.data('timelife')?e.data('timelife'):0
-             return factor >= 1 ? 'black' : 'red'}
+
+             const max_color_gradient_steps = 10.0
+             const factor = e.data('timelife')? Math.min(e.data('timelife')/max_color_gradient_steps , 1.0) :0
+             const color_2 = [0, 0, 0]       // old edge
+             const color_1 = [200, 200, 200] // new edge
+
+             function lerpRGB(color1, color2, t) {
+              let color = [0,0,0];
+              color[0] = color1[0] + ((color2[0] - color1[0]) * t);
+              color[1] = color1[1] + ((color2[1] - color1[1]) * t);
+              color[2] = color1[2] + ((color2[2] - color1[2]) * t);
+              return color;
+          }
+
+             return rgb_opacity_to_rgba( lerpRGB(color_1 , color_2 , factor) , 1.0 )} // opacity doesnt effect line-color
              }
         },
         {
@@ -364,9 +375,22 @@ export default function GraphApp( props ) {
         for ( const e of a.edges){
           const previous_e_1 = cy.current.$('edge[source = "'+e.data['source']+'"][target = "'+e.data['target']+'"]')
           const previous_e_2 = cy.current.$('edge[source = "'+e.data['target']+'"][target = "'+e.data['source']+'"]')
-          const previous_e_t = previous_e_1? previous_e_1: (previous_e_2? previous_e_2: undefined )
-          const previous_e = previous_e_t[0]? previous_e_t[0] : undefined
-          e.data['timelife'] = previous_e? (previous_e.data['timelife']?previous_e.data['timelife'] : 0 ) + 1 : 0
+          
+          const is_still_alive =  previous_e_1.size() === 1 || previous_e_2.size() === 1
+
+          let previous_e
+          if(previous_e_1.size() === 1){
+            previous_e = previous_e_1
+          } else if (previous_e_2.size() === 1) {
+            previous_e = previous_e_2
+          }
+          
+          if( is_still_alive && isNaN( previous_e.data('timelife') ) ) {
+            e.data['timelife'] = 1
+          }
+          else {
+            e.data['timelife'] = is_still_alive? previous_e.data('timelife') + 1 : 0
+          }
         }
 
         cy.current.json({elements:a})
