@@ -12,6 +12,7 @@ import { BsLayoutSidebarInsetReverse } from 'react-icons/bs';
 import DensityPlot from '../DensityPlot';
 import SectorPlot from '../SectorPlot';
 import useInterval from '../../utils/useInterval';
+import handler from '../../pages/api/ftx'
 
 
 cytoscape.use( d3Force );
@@ -235,6 +236,7 @@ export default function GraphApp( props ) {
 
 
   useLayoutEffect(() => {
+    handler()
 
     const elements= arr_elements[ctn_arr]
 

@@ -17,12 +17,14 @@
     "cytoscape-fcose": "^2.1.0",
     "cytoscape-popper": "^2.0.0",
     "d3": "^7.4.2",
-    "next": "^12.1.5",
+    "ftx-api": "^1.1.8",
+    "next": "^12.1.6",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-google-charts": "^4.0.0",
     "react-icons": "^4.3.1",
-    "sass": "^1.49.9"
+    "sass": "^1.49.9",
+    "websocket-client": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "8.11.0",
