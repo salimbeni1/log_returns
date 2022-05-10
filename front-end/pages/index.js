@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import GraphApp from '../components/GraphApp'
 import { LoadingGraphApp } from '../components/LoadingGraphApp'
+import { getServerPath } from '../utils/utils'
 
 export default function Home() {
 
@@ -17,7 +18,7 @@ export default function Home() {
   }
 
   function fetchData(url) {
-    fetch(url).then(data => data.json().then(jsn => {
+    fetch( getServerPath() + url ).then(data => data.json().then(jsn => {
       setJsonsData(jsn)
       setDataIsNotLoaded(false)
       console.log("SUCCESS: local fetch from " + url)
