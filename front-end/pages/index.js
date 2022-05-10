@@ -12,7 +12,7 @@ export default function Home() {
   const [firstLoad, setFirstLoad] = useState(true)
 
   if (firstLoad) {
-    fetchData('/data/MST/MST_123.json')
+    fetchData('/data/MST/MST.json')
     setFirstLoad(false)
   }
 
@@ -30,47 +30,39 @@ export default function Home() {
     switch (jsonType) {
       case 'MST_123': // minimum spanning tree
         setGraphDataType(jsonType)
-        fetchData('/data/MST/MST_123.json')
+        fetchData('/data/MST/MST.json')
         break
 
       case 'MST_p1': // minimum spanning tree
         setGraphDataType(jsonType)
-        fetchData('/data/MST/MST_round_p1.json')
+        fetchData('/data/MST/MST_q_0.json')
         break
 
       case 'MST_p2': // minimum spanning tree
         setGraphDataType(jsonType)
-        fetchData('/data/MST/MST_round_p2.json')
+        fetchData('/data/MST/MST_q_1.json')
         break
 
       case 'MST_p3': // minimum spanning tree
         setGraphDataType(jsonType)
-        fetchData('/data/MST/MST_round_p3.json')
+        fetchData('/data/MST/MST_q_2.json')
         break
 
-      case 'FCT_0p5': // fully connected with threshold 0.5
+      case 'FCT_q0': // fully connected with threshold 0.6
         setGraphDataType(jsonType)
-        fetchData('/data/FCT/FCT_0p5.json')
+        fetchData('/data/FCT/FCT_q0.json')
         break
-      case 'FCT_0p6': // fully connected with threshold 0.6
+      case 'FCT_q1': // fully connected with threshold 0.7
         setGraphDataType(jsonType)
-        fetchData('/data/FCT/FCT_0p6.json')
+        fetchData('/data/FCT/FCT_q1.json')
         break
-      case 'FCT_0p7': // fully connected with threshold 0.7
+      case 'FCT_q2': // fully connected with threshold 0.8
         setGraphDataType(jsonType)
-        fetchData('/data/FCT/FCT_0p7.json')
-        break
-      case 'FCT_0p8': // fully connected with threshold 0.8
-        setGraphDataType(jsonType)
-        fetchData('/data/FCT/FCT_0p8.json')
-        break
-      case 'FCT_0p9': // fully connected with threshold 0.9
-        setGraphDataType(jsonType)
-        fetchData('/data/FCT/FCT_0p9.json')
+        fetchData('/data/FCT/FCT_q2.json')
         break
       
       default:
-        fetchData('/data/MST/MST_123.json')
+        fetchData('/data/MST/MST.json')
     }
   }
 

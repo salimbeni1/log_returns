@@ -1,16 +1,15 @@
 
 export default function SectorPlot(props) {
-    
+  
     const arr = props.data
     const counts = {};
     for (const num of arr) {
         counts[num] = counts[num] ? counts[num] + 1 : 1;
     }
     var element = [["Element", "Density", { role: "style" } ]]
+  
     for (const [key, value] of Object.entries(counts)) {
-        
-        element.push([key, value, "rgb("+props.map_sect_col[key].join()+")"])
-
+      element.push([key, value, "rgb("+props.map_sect_col[key].join()+")"])
     }
     
     google.charts.load("current", {packages:['corechart']});

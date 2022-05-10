@@ -12,7 +12,9 @@ import { BsLayoutSidebarInsetReverse } from 'react-icons/bs';
 import DensityPlot from '../DensityPlot';
 import SectorPlot from '../SectorPlot';
 import useInterval from '../../utils/useInterval';
-import handler from '../../pages/api/ftx'
+
+import NumberPicker from "react-widgets/NumberPicker";
+
 
 
 cytoscape.use( d3Force );
@@ -28,10 +30,19 @@ export default function GraphApp( props ) {
 
   const [ctn_arr, setCtn_arr] = useState(0)
 
+  const [currentDate, setCurrentDate] = useState( props.json_data['all'][0]['date'] )
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
-  const [delay, setDelay] = useState(1)
+  
+  var delay_ = 1
+
+  if (graph_layout === 'concentric_layout') {
+    delay_ = 1500;
+  }
+
+  const [delay, setDelay] = useState(delay_)
+
   const [update, setUpdate] = useState(false) 
 
   const [sideBarIsHidden, setSideBarIsHidden] = useState(false)
@@ -50,7 +61,7 @@ export default function GraphApp( props ) {
   const DAY_INTERVAL = 1
   const WEEK_INTERVAL = 5
   const MONTH_INTERVAL = 22
-  const YEAR_INTERVAL = 260
+  const YEAR_INTERVAL = 252
 
   const update_new_slider_pos = (step) =>{
     
@@ -91,6 +102,8 @@ export default function GraphApp( props ) {
 
 
     const a = arr_elements[ ctn_arr % arr_elements.length]
+
+    setCurrentDate(a['date'])
     cy.current.json({elements:a})
     ly.current = cy.current.layout(layout_map[graph_layout])
     ly.current.run()
@@ -236,7 +249,7 @@ export default function GraphApp( props ) {
 
 
   useLayoutEffect(() => {
-    handler()
+
 
     const elements= arr_elements[ctn_arr]
 
@@ -363,9 +376,9 @@ export default function GraphApp( props ) {
     return () => {}
   }, [])
 
-
   
   useInterval(function(){
+
 
         if (update) {
 
@@ -395,17 +408,19 @@ export default function GraphApp( props ) {
           }
         }
 
+        setCurrentDate(a['date'])
+
         cy.current.json({elements:a})
         ly.current = cy.current.layout(layout_map[graph_layout])
         ly.current.run()
-        setCtn_arr( x => x +1 )
+        setCtn_arr( x => x + 1 )
         update_selected_node(selected_node.id , selected_node_values_oder)
         setUpdate(false)
     
       } else {
         setDelay(x => x)
       }
-      
+
   }, playButton ? null:  delay)
 
   const clean_dropdown = (event, elem, style) => {
@@ -434,7 +449,6 @@ export default function GraphApp( props ) {
     clean_dropdown(event, document.getElementsByClassName(styles.dateForm)[0] ,styles.dateform_window) 
 
   }
-  
 
   const cola_layout = {
     name: 'cola',
@@ -447,7 +461,7 @@ export default function GraphApp( props ) {
     centerGraph: true,
     nodeSpacing: function( node ){ return 1; }, // space around node
     edgeLength:  function( edge ){ return 4000./edge.data("value")},
-    stop: function(){
+    stop: async function(){
       setUpdate(true)
     } , 
      
@@ -456,10 +470,34 @@ export default function GraphApp( props ) {
     refresh:1
   }
 
-  
-  const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
+   /* CONCENTRIC LAYOUT */
+  const [circleIdx, setCircleIdx] = useState(0) // default 0
+  const [rangeIdxUp, setRangeIdxUp] = useState(1) // default 1
+  const [rangeIdxDown, setRangeIdxDown] = useState(0) // default 0
+
+  function nodeListForPlotSelection() {
+    let nodeList = []
+
+    if (cy.current !== null && cy.current.nodes().length > 0) {
+
+      const allNodes = [...cy.current.nodes()];
+ 
+      for (var i = 0; i < allNodes.length; ++i) {
+
+        const n = allNodes[i]
+        const thisCircleIdx = (cy.current.nodes().maxDegree() - n.degree()) / 2
+        if (thisCircleIdx >= circleIdx - rangeIdxDown && thisCircleIdx <= circleIdx + rangeIdxUp) {
+          nodeList.push(n.data("sector"))
+        }
+      }
+      return nodeList;
+    } else {
+      return undefined;
+    }
+    
   }
+
+
   const concentric_layout = {
     name: 'concentric',
     fit: false,
@@ -473,10 +511,9 @@ export default function GraphApp( props ) {
       return node.degree()
     },
     levelWidth: function( nodes ){
-      return nodes.maxDegree() / 8; // TODO change with FCT data
+      return 2
     },
     stop: async function(){
-      await sleep(1500)
       setUpdate(true)
     } ,
   }
@@ -497,7 +534,7 @@ export default function GraphApp( props ) {
 
           <div className={styles.dropdown}>
 
-            <h2> 16/07/1998</h2>
+          <h2> { currentDate } </h2>
 
             <FaList onClick={() => {
                 for ( const e of document.getElementsByClassName(styles.layouts) ) { e.style['display'] = "block" }
@@ -526,7 +563,7 @@ export default function GraphApp( props ) {
               
               <div className={styles.btn} onClick={ () => { {
                 props.change_layout('concentric_layout')    
-                props.reload_data("FCT_0p7")
+                props.reload_data("FCT_q1")
               } }}>
                 <FaFirstOrderAlt/>
                   <p>CONCENTRIC</p>
@@ -695,12 +732,66 @@ export default function GraphApp( props ) {
 
             {graph_layout === 'concentric_layout' && 
               <>
-              <div className={styles.layout_info} >
+              <div className={styles.layout_info}>
              
               <h4> CONCENTRIC LAYOUT </h4>
 
               <div className={styles.scroll_zone}>
               <p> The concentric layout graph model assigns each node to a circular level around the centre according to its degree. High-degree nodes are positioned in the middle, while low degree nodes are positioned in the outer circles. Namely, the number of edges attached to a node determines where the node is positioned.  </p>
+              
+              <h4>Sector distribution</h4>
+              <p> Select the circle you want to visualize the sector distribution for and a range for near circles. For instance circle index 2 with range 3 will show sector distribution of the second, third and fourth circle. </p>
+            
+              <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
+                <div className={styles.content2}>
+
+                  { nodeListForPlotSelection() !== undefined &&
+                    <SectorPlot 
+                          data={nodeListForPlotSelection()}
+                          map_sect_col={map_sector_to_color}
+                    />
+
+                  }
+                </div>
+              </div>
+
+              <h4> Circle Number </h4>
+              <NumberPicker defaultValue={0} onChange={(n) => {
+                if (n >= 0) { setCircleIdx(n) }   
+              }}/>
+
+              
+              <h4> Range OUT</h4>
+              <NumberPicker defaultValue={1} onChange={(r) => {
+                if (r >= 0) { setRangeIdxUp(r) }   
+              }}/>
+
+              <h4> Range IN</h4>
+              <NumberPicker defaultValue={0} onChange={(r) => {
+                if (r >= 0) { setRangeIdxDown(r) }   
+              }}/>    
+
+            <h4> ADJUST DISTANCE PARAMETER </h4>
+
+            <button onClick={ () => {
+                  props.change_layout('concentric_layout')    
+                  props.reload_data("FCT_q0") 
+                }}>
+                0.6
+            </button>
+            <button onClick={ () => {
+                  props.change_layout('concentric_layout')    
+                  props.reload_data("FCT_q1") 
+                }}>
+                0.7
+            </button>
+            <button onClick={ () => {
+                  props.change_layout('concentric_layout')    
+                  props.reload_data("FCT_q2")
+                }}>
+                0.8
+            </button>
+              
               <h4> INSIGHT </h4>
               <p> When loading data for a given time window, all edges with low correlation are discarded, 
                 the threshold with which these edges are discarded can be selected here-under in terms of 
@@ -708,37 +799,7 @@ export default function GraphApp( props ) {
                 market is generally highly correlated, all nodes tend to concentrate in the inner circles.
                 In contrast, when the market is generally less correlated, nodes are mainly positioned 
                 in the outer circles of the concentric layout.  </p>
-                <h4> ADJUST DISTANCE PARAMETER </h4>
-                <button onClick={ () => {
-                      props.change_layout('concentric_layout')    
-                      props.reload_data("FCT_0p5") 
-                    }}>
-                    0.5
-                </button>
-                <button onClick={ () => {
-                      props.change_layout('concentric_layout')    
-                      props.reload_data("FCT_0p6") 
-                    }}>
-                    0.6
-                </button>
-                <button onClick={ () => {
-                      props.change_layout('concentric_layout')    
-                      props.reload_data("FCT_0p7") 
-                    }}>
-                    0.7
-                </button>
-                <button onClick={ () => {
-                      props.change_layout('concentric_layout')    
-                      props.reload_data("FCT_0p8")
-                    }}>
-                    0.8
-                </button>
-                <button onClick={ () => {
-                      props.change_layout('concentric_layout')    
-                      props.reload_data("FCT_0p9")
-                    }}>
-                    0.9
-                </button>
+
                 </div>
               </div>
               </>}
