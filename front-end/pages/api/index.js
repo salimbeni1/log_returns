@@ -3,7 +3,15 @@ import { RestClient } from "ftx-api";
 /*
   Demonstrations on basic REST API calls
 */
-export default function handler() {
+export default async function handler(req , res) {
+  const key = '';
+  const secret = '';
+
+  const client = new RestClient(key, secret);
+
+  const val = await client.getMarkets()
+  console.log(val)
+/*
   console.log("Connecting.");
 (async () => {
   // Optional, but required for private endpoints
@@ -20,4 +28,6 @@ export default function handler() {
   }
 
 })()
+*/
+res.status(200).json({val})
 }
