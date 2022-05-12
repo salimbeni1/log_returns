@@ -1,10 +1,36 @@
 
 
-.ctn{
 
-    border: 10px solid black;
-    height: 100%;
+.grid{
 
-    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 
+    margin: var(--margin-global);
+    gap: var(--margin-global) ;
+    
+    overflow-y: scroll;
+    max-height: 85vh;
+
+    .ctn{
+
+    border-radius: var(--border-rad);
+    background-color: white;
+    padding: var(--margin-global);
+
+    }
+
+    .quote{
+        display: grid;
+        align-items: center;
+        
+        h1{
+            margin: 0px 20px;
+            padding: 0px;
+        }
+        p{
+            margin: 0px 50px;
+        }
+    }
 }
+
