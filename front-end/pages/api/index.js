@@ -95,9 +95,7 @@ export default async function handler(req , res) {
     nodes[i] = {'data': {
       'id': i,
        'label': pair[i],
-       'sector': 'Energy',
-       'industry': 'empty',
-       'fullTimeEmp': 'empty'}}
+      'sector': "Blockchain"}}
   }
   dict['nodes'] = nodes
 
@@ -108,12 +106,11 @@ export default async function handler(req , res) {
     var w = e.other(v);
     edges[i] = {'data': {
       'id': 'link_' + i,
-      'source': v,
-      'target': w,
+      'source': String(v),
+      'target': String(v),
       'value': e.weight}}
   }
   dict['edges'] = edges
-  dict['date'] = '2020-10-20'
 
   res.status(200).json(dict)
 }

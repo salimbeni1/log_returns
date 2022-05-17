@@ -13,7 +13,7 @@ export default function Home() {
   const [firstLoad, setFirstLoad] = useState(true)
 
   if (firstLoad) {
-    fetchData('/data/MST/MST.json')
+    fetchData('data/MST/MST.json')
     setFirstLoad(false)
   }
 

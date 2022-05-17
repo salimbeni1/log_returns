@@ -3,7 +3,7 @@ import d3Force from 'cytoscape-d3-force';
 import cola from 'cytoscape-cola';
 
 
-import styles from './GraphApp.module.scss'
+import styles from './LiveGraphApp.module.scss'
 import {useCallback, useLayoutEffect , useRef , useState} from 'react'
 import { FaAngleRight,FaStopwatch ,  FaExpandArrowsAlt, FaCompressArrowsAlt , FaRegCalendarAlt , FaAngleLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlay , FaStop , FaHubspot, FaTree, FaTablets, FaFirstOrderAlt , FaSortAmountUp ,FaSortAmountDownAlt , FaIndustry, FaList} from 'react-icons/fa';
 import { BiReset } from 'react-icons/bi';
@@ -20,7 +20,7 @@ import NumberPicker from "react-widgets/NumberPicker";
 cytoscape.use( d3Force );
 cytoscape.use( cola );
 
-export default function GraphApp( props ) {
+export default function LiveGraphApp( props ) {
 
   const graph_layout = props.layout
   const data_type = props.data_type
@@ -30,7 +30,7 @@ export default function GraphApp( props ) {
 
   const [ctn_arr, setCtn_arr] = useState(0)
 
-  const [currentDate, setCurrentDate] = useState( props.json_data['all'][0]['date'] )
+  const [currentDate, setCurrentDate] = useState( '2022-10-20' )
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
@@ -47,7 +47,9 @@ export default function GraphApp( props ) {
 
   const [sideBarIsHidden, setSideBarIsHidden] = useState(false)
 
-  const [arr_elements, setArr_elements] = useState(props.json_data['all'])
+  const [arr_elements, setArr_elements] = useState([props.json_data['all']])
+  console.log("DATA IN LIVE_GRAPH_APP")
+  console.log(props.json_data)
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -63,54 +65,7 @@ export default function GraphApp( props ) {
   const MONTH_INTERVAL = 22
   const YEAR_INTERVAL = 252
 
-  const update_new_slider_pos = (step) =>{
-    
-    switch (step) {
-
-      case "m_DAY": 
-        setCtn_arr(parseInt(ctn_arr - DAY_INTERVAL))
-        break
-      case "p_DAY": 
-        setCtn_arr(parseInt(ctn_arr + DAY_INTERVAL))
-        break
-
-      case "m_WEEK":
-        setCtn_arr(parseInt(ctn_arr - WEEK_INTERVAL))
-        break
-      case "p_WEEK":
-          setCtn_arr(parseInt(ctn_arr + WEEK_INTERVAL))
-          break
-
-      case "m_MONTH":
-        setCtn_arr(parseInt(ctn_arr - MONTH_INTERVAL))
-        break
-      case "p_MONTH":
-        setCtn_arr(parseInt(ctn_arr + MONTH_INTERVAL))
-        break
-
-      case "m_YEAR":
-        setCtn_arr(parseInt(ctn_arr - YEAR_INTERVAL))
-        break
-      case "p_YEAR":
-          setCtn_arr(parseInt(ctn_arr + YEAR_INTERVAL))
-          break
-
-      default :
-        setCtn_arr(parseInt(ctn_arr))
-    }
-
-
-
-    const a = arr_elements[ ctn_arr % arr_elements.length]
-
-    setCurrentDate(a['date'])
-    cy.current.json({elements:a})
-    ly.current = cy.current.layout(layout_map[graph_layout])
-    ly.current.run()
-      
-    update_selected_node(selected_node.id , selected_node_values_oder)
-
-  }
+  
 
   const getDateForm = () => {
     return <>
@@ -121,25 +76,6 @@ export default function GraphApp( props ) {
         props.change_layout(graph_layout)
         props.reload_data(data_type)
       }}/>
-    </div>
-    
-
-    <div className={styles.grid}>
-      <h5 > DAY</h5>
-      <FaAngleLeft onClick={ () => update_new_slider_pos("m_DAY")}/>
-      <FaAngleRight onClick={ () => update_new_slider_pos("p_DAY")}/>
-      
-      <h5> WEEK </h5> 
-      <FaAngleLeft onClick={ () => update_new_slider_pos("m_WEEK")}/>
-      <FaAngleRight onClick={ () => update_new_slider_pos("p_WEEK")}/>
-
-      <h5> MONTH </h5>
-      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_MONTH")}/>
-      <FaAngleDoubleRight  onClick={ () => update_new_slider_pos("p_MONTH")}/>
-
-      <h5 > YEAR </h5>
-      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_YEAR")}/>
-      <FaAngleDoubleRight onClick={ () => update_new_slider_pos("p_YEAR")}/>
     </div>
 
     </>
@@ -220,22 +156,12 @@ export default function GraphApp( props ) {
   }
 
   const map_sector_to_color = {
-    "Industrials"            : [255, 102, 153], 
-    "Technology"             : [146, 86 , 86 ],
-    "Communication Services" : [86 , 86 , 146],
-    "Basic Materials"        : [204, 102, 255],
-    "Consumer Defensive"     : [102, 153, 255],
-    "Energy"                 : [102, 255, 204],
-    "Healthcare"             : [255, 204, 102],
-    "Consumer Cyclical"      : [255, 0  , 102],
-    "Utilities"              : [0  , 204, 0  ],
-    "Financial Services"     : [204, 153, 0  ],
-    "Real Estate"            : [204, 204, 255]
+    "Blockchain"            : [255, 102, 153], 
     /*"others"                 : [128,128,128] */
   }
 
   const rgb_opacity_to_rgba  = (rgb_arr , opacity ) => {
-    return "rgba("+rgb_arr.join()+" , "+opacity+")"
+    return "rgba(255, 102, 153)"
   }
 
   const sector_opacity_to_rgba  = (sector , opacity ) => {
@@ -867,10 +793,10 @@ export default function GraphApp( props ) {
   )
 }
 
-GraphApp.defaultProps = {
+LiveGraphApp.defaultProps = {
   layout: 'cola_layout',
   json_data: { "all" : { } },
   data_type: 'MST',
-  reload_data: () => console.log("NOT IMPLEMENTED: assign props to GraphApp"),
-  change_layout: () => console.log("NOT IMPLEMENTED: assign props to GraphApp")
+  reload_data: () => console.log("NOT IMPLEMENTED: assign props to LiveGraphApp"),
+  change_layout: () => console.log("NOT IMPLEMENTED: assign props to LiveGraphApp")
 };

@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "axios": "^0.26.1",
     "compute-pcorr": "^1.0.0",
     "cose-base": "^2.0.0",
     "cytoscape": "^3.21.0",

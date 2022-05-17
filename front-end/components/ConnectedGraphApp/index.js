@@ -1,8 +1,8 @@
 
 import {useState} from 'react'
-import GraphApp from '../GraphApp'
+import LiveGraphApp from '../LiveGraphApp'
 
-import axios from 'axios';
+import { getServerPath } from '../../utils/utils';
 import { LoadingGraphApp } from '../LoadingGraphApp';
 
 
@@ -17,17 +17,17 @@ export default function ConnectedGraphApp() {
 
   /* LOAD DATA FROM SERVER */
   if (firstLoad) {
-    fetchData('http://127.0.0.1:3000/api')
+    fetchData(getServerPath() + 'api/')
     setFirstLoad(false)
   }
 
   function fetchData(url) {
-    axios.get(url).then(jsons => {
-      setJsonsData({'all':[jsons.data]})
+    fetch(url).then(data => data.json().then(jsons => {
+      setJsonsData({'all': [jsons]})
       setFirstLoad(false)
       setDataIsNotLoaded(false)
       console.log("SUCCESS: server fetch from " + url)
-    }).catch(err => {
+    })).catch(err => {
       console.log(" NETWORK ERROR ")
       console.log(err)
     })
@@ -40,19 +40,19 @@ export default function ConnectedGraphApp() {
     switch (jsonType) {
       case 'MST':
         setGraphDataType(jsonType)
-        fetchData("http://127.0.0.1:8000/mst")
+        fetchData(getServerPath() + 'api/')
         break
       case 'FCT':
         setGraphDataType(jsonType)
-        fetchData("http://127.0.0.1:8000/fct")
+        fetchData(getServerPath() + 'api/')
         break
       
       default:
-        fetchData("http://127.0.0.1:8000/mst")
+        fetchData(getServerPath() + 'api/')
     }
 
     
   }
 
-  return  (dataIsNotLoaded) ? <LoadingGraphApp/> :  <GraphApp json_data={jsonsData} data_type={graphDataType} reload_data={(jsonType) => reFetchData(jsonType)}/> 
+  return  (dataIsNotLoaded) ? <LoadingGraphApp/> :  <LiveGraphApp json_data={jsonsData} data_type={graphDataType} reload_data={(jsonType) => reFetchData(jsonType)}/> 
 }
