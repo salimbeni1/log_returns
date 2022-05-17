@@ -17,13 +17,13 @@ export default function ConnectedGraphApp() {
 
   /* LOAD DATA FROM SERVER */
   if (firstLoad) {
-    fetchData('http://127.0.0.1:8000/mst')
+    fetchData('http://127.0.0.1:3000/api')
     setFirstLoad(false)
   }
 
   function fetchData(url) {
     axios.get(url).then(jsons => {
-      setJsonsData(jsons.data)
+      setJsonsData({'all':[jsons.data]})
       setFirstLoad(false)
       setDataIsNotLoaded(false)
       console.log("SUCCESS: server fetch from " + url)

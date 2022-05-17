@@ -92,7 +92,12 @@ export default async function handler(req , res) {
 
   var nodes = new Array( N )
   for ( var i = 0; i < N; i++ ) {
-    nodes[i] = {'data': {'id': i, 'label': pair[i]}}
+    nodes[i] = {'data': {
+      'id': i,
+       'label': pair[i],
+       'sector': 'Energy',
+       'industry': 'empty',
+       'fullTimeEmp': 'empty'}}
   }
   dict['nodes'] = nodes
 
@@ -108,6 +113,7 @@ export default async function handler(req , res) {
       'value': e.weight}}
   }
   dict['edges'] = edges
+  dict['date'] = '2020-10-20'
 
   res.status(200).json(dict)
 }
