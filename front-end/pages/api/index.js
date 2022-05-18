@@ -40,9 +40,9 @@ export default async function handler(req , res) {
     "FTM/USD",
     "LTC/USD",
     "ATOM/USD",
-    "FTT/USD"
+    "FTT/USD" 
   ]
-  
+
   const N = pair.length
   var x = new Array( N )
   for ( var i = 0; i < N; i++ ) {
@@ -90,27 +90,36 @@ export default async function handler(req , res) {
 
   var dict = { }
 
-  var nodes = new Array( N )
+  var nodes = []
   for ( var i = 0; i < N; i++ ) {
-    nodes[i] = {'data': {
-      'id': i,
-       'label': pair[i],
-      'sector': "Blockchain"}}
+    nodes.push({data: {
+      id: String(i),
+      label: pair[i],
+      sector: "Blockchain",
+      industry: "Blockchain",
+      fullTimeEmp: "Blockchain"}})
   }
   dict['nodes'] = nodes
 
-  var edges = new Array( mst.length )
+  var edges = []
   for(var i=0; i < mst.length; ++i) {
     var e = mst[i];
     var v = e.either();
     var w = e.other(v);
-    edges[i] = {'data': {
-      'id': 'link_' + i,
-      'source': String(v),
-      'target': String(v),
-      'value': e.weight}}
+    edges.push({data: {
+      id: 'link_' + i,
+      source: String(v),
+      target: String(w),
+      value: e.weight}})
   }
   dict['edges'] = edges
 
-  res.status(200).json(dict)
+  dict['date'] = new Date().toLocaleDateString() 
+
+
+  var result = {all: [ dict ]}
+
+  console.log(result)
+
+  res.status(200).json(result)
 }

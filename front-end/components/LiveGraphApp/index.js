@@ -22,6 +22,9 @@ cytoscape.use( cola );
 
 export default function LiveGraphApp( props ) {
 
+  console.log("IN LiveGraphApp")
+  console.log(JSON.stringify(props.json_data['all']))
+
   const graph_layout = props.layout
   const data_type = props.data_type
 
@@ -30,7 +33,7 @@ export default function LiveGraphApp( props ) {
 
   const [ctn_arr, setCtn_arr] = useState(0)
 
-  const [currentDate, setCurrentDate] = useState( '2022-10-20' )
+  const [currentDate, setCurrentDate] = useState( props.json_data['all'][0]['date'] )
   const [playButton, setPlayButton] = useState(true)
   const myInterval = useRef(null)
 
@@ -47,9 +50,7 @@ export default function LiveGraphApp( props ) {
 
   const [sideBarIsHidden, setSideBarIsHidden] = useState(false)
 
-  const [arr_elements, setArr_elements] = useState([props.json_data['all']])
-  console.log("DATA IN LIVE_GRAPH_APP")
-  console.log(props.json_data)
+  const [arr_elements, setArr_elements] = useState(props.json_data['all'])
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -65,7 +66,54 @@ export default function LiveGraphApp( props ) {
   const MONTH_INTERVAL = 22
   const YEAR_INTERVAL = 252
 
-  
+  const update_new_slider_pos = (step) =>{
+    
+    switch (step) {
+
+      case "m_DAY": 
+        setCtn_arr(parseInt(ctn_arr - DAY_INTERVAL))
+        break
+      case "p_DAY": 
+        setCtn_arr(parseInt(ctn_arr + DAY_INTERVAL))
+        break
+
+      case "m_WEEK":
+        setCtn_arr(parseInt(ctn_arr - WEEK_INTERVAL))
+        break
+      case "p_WEEK":
+          setCtn_arr(parseInt(ctn_arr + WEEK_INTERVAL))
+          break
+
+      case "m_MONTH":
+        setCtn_arr(parseInt(ctn_arr - MONTH_INTERVAL))
+        break
+      case "p_MONTH":
+        setCtn_arr(parseInt(ctn_arr + MONTH_INTERVAL))
+        break
+
+      case "m_YEAR":
+        setCtn_arr(parseInt(ctn_arr - YEAR_INTERVAL))
+        break
+      case "p_YEAR":
+          setCtn_arr(parseInt(ctn_arr + YEAR_INTERVAL))
+          break
+
+      default :
+        setCtn_arr(parseInt(ctn_arr))
+    }
+
+
+
+    const a = arr_elements[ ctn_arr % arr_elements.length]
+
+    setCurrentDate(a['date'])
+    cy.current.json({elements:a})
+    ly.current = cy.current.layout(layout_map[graph_layout])
+    ly.current.run()
+      
+    update_selected_node(selected_node.id , selected_node_values_oder)
+
+  }
 
   const getDateForm = () => {
     return <>
@@ -76,6 +124,25 @@ export default function LiveGraphApp( props ) {
         props.change_layout(graph_layout)
         props.reload_data(data_type)
       }}/>
+    </div>
+    
+
+    <div className={styles.grid}>
+      <h5 > DAY</h5>
+      <FaAngleLeft onClick={ () => update_new_slider_pos("m_DAY")}/>
+      <FaAngleRight onClick={ () => update_new_slider_pos("p_DAY")}/>
+      
+      <h5> WEEK </h5> 
+      <FaAngleLeft onClick={ () => update_new_slider_pos("m_WEEK")}/>
+      <FaAngleRight onClick={ () => update_new_slider_pos("p_WEEK")}/>
+
+      <h5> MONTH </h5>
+      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_MONTH")}/>
+      <FaAngleDoubleRight  onClick={ () => update_new_slider_pos("p_MONTH")}/>
+
+      <h5 > YEAR </h5>
+      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_YEAR")}/>
+      <FaAngleDoubleRight onClick={ () => update_new_slider_pos("p_YEAR")}/>
     </div>
 
     </>
@@ -156,12 +223,12 @@ export default function LiveGraphApp( props ) {
   }
 
   const map_sector_to_color = {
-    "Blockchain"            : [255, 102, 153], 
-    /*"others"                 : [128,128,128] */
+    "Blockchain"             : [128,128,128]
+
   }
 
   const rgb_opacity_to_rgba  = (rgb_arr , opacity ) => {
-    return "rgba(255, 102, 153)"
+    return "rgba("+rgb_arr.join()+" , "+opacity+")"
   }
 
   const sector_opacity_to_rgba  = (sector , opacity ) => {
@@ -214,8 +281,8 @@ export default function LiveGraphApp( props ) {
         {
           selector: 'node',
           style: {
-            'width' : '2000px',
-            'height' : '2000px',
+            'width' : '4000px',
+            'height' : '4000px',
             'label': (e) => e.data("label"),
             "text-valign" : "center",
             "text-halign" : "center",
@@ -241,8 +308,8 @@ export default function LiveGraphApp( props ) {
         {
           selector: 'node:selected',
           style: {
-            'width' : '4000px',
-            'height' : '4000px',
+            'width' : '8000px',
+            'height' : '8000px',
             "font-weight" : "800",
             "font-size" : "1200px",
           }
@@ -250,8 +317,8 @@ export default function LiveGraphApp( props ) {
         {
           selector: ".hover",
           css: {
-            'width' : '4600px',
-            'height' : '4600px',
+            'width' : '8600px',
+            'height' : '8600px',
             "font-weight" : "800",
             "font-size" : "1200px"
           }
@@ -260,7 +327,7 @@ export default function LiveGraphApp( props ) {
       ],
       layout: layout_map[graph_layout],
       
-      zoom: 0.005,
+      zoom: 0.05,
       pan: { x: 450, y: 260 },
 
       minZoom: 0.0015,
@@ -302,7 +369,7 @@ export default function LiveGraphApp( props ) {
     return () => {}
   }, [])
 
-  
+
   useInterval(function(){
 
 
@@ -385,8 +452,8 @@ export default function LiveGraphApp( props ) {
     avoidOverlap: false,
     animate:true,
     centerGraph: true,
-    nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return 4000./edge.data("value")},
+    nodeSpacing: function( node ){ return 10; }, // space around node
+    edgeLength:  function( edge ){ return 3000/edge.data("value")},
     stop: async function(){
       setUpdate(true)
     } , 
@@ -462,9 +529,6 @@ export default function LiveGraphApp( props ) {
 
           <h2> { currentDate } </h2>
 
-            <FaList onClick={() => {
-                for ( const e of document.getElementsByClassName(styles.layouts) ) { e.style['display'] = "block" }
-              }}/>
 
             { !sideBarIsHidden && <FaExpandArrowsAlt onClick={ () => {
                     document.getElementsByClassName(styles.wrapper)[0].style['display'] = "none"
@@ -475,27 +539,6 @@ export default function LiveGraphApp( props ) {
                     document.getElementsByClassName(styles.cyContainer)[0].style['width'] = "70%"
                     setSideBarIsHidden(false) }}/> }
                 
-            
-      
-            <div className={styles.layouts}>
-              <h4> LAYOUT </h4>
-              <div className={styles.btn} onClick={ () => {
-                props.change_layout('cola_layout')
-                props.reload_data("MST_123")
-              }}>
-                <FaHubspot/>
-                  <p>COLA</p>
-              </div>
-              
-              <div className={styles.btn} onClick={ () => { {
-                props.change_layout('concentric_layout')    
-                props.reload_data("FCT_q1")
-              } }}>
-                <FaFirstOrderAlt/>
-                  <p>CONCENTRIC</p>
-              </div>
-              
-            </div>
           </div>
 
           <div className={styles.legend}>
