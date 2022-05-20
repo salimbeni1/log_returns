@@ -45,6 +45,7 @@ export default function ConnectedGraphApp() {
 
 
   function reFetchData(jsonType) {
+    //console.log("reFetchData", JSON.stringify(jsonType))
     /*
     setDataIsNotLoaded(true)
 
