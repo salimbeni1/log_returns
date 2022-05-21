@@ -9,7 +9,7 @@ import jsgraphs  from "js-graph-algorithms";
 export default async function handler(req , res) {
 
   const end_date = Date.now() / 1000
-  const start_date = end_date - 300
+  const start_date = end_date - 30000
 
   
   const key = '';
@@ -18,39 +18,68 @@ export default async function handler(req , res) {
   const client = new RestClient(key, secret);
 
   const pair = [
-    "BTC/USD",
-    "ETH/USD",
-    "LUNA/USD",
-    "SOL/USD",
-    "BTC/USDT",
-    "LUNA/USDT",
-    "ETH/USDT",
-    "BNB/USD",
-    "SOL/USDT",
-    "AVAX/USD",
-    "XRP/USD",
-    "GMT/USD",
-    "DOT/USD",
-    "MATIC/USD",
-    "APE/USD",
-    "BCH/USD",
-    "DOGE/USD",
-    "AXS/USD",
-    "BNB/USDT",
-    "FTM/USD",
-    "LTC/USD",
-    "ATOM/USD",
-    "FTT/USD" 
+    'ETH/USD',
+    'BTC/USD',
+    'SOL/USD',
+    'AVAX/USD',
+    'BTC/USDT',
+    'LTC/USD',
+    'LTC/USDT',
+    'DOGE/USD',
+    'LINK/USD',
+    'SOL/USDT',
+    'ETH/USDT',
+    'BCH/USDT',
+    'AAVE/USD',
+    'TRX/USDT',
+    'AVAX/USDT',
+    'MATIC/USD',
+    'BCH/USD',
+    'GRT/USD',
+    'TRX/USD',
+    'AVAX/BTC',
+    'SUSHI/USD',
+    'USDT/USD',
+    'KSHIB/USD',
+    'UNI/BTC',
+    'UNI/USD',
+    'ETH/BTC',
+    'DOGE/USDT',
+    'BCH/BTC',
+    'SUSHI/USDT',
+    'NEAR/USD',
+    'SOL/BTC',
+    'YFI/USD',
+    'UNI/USDT',
+    'YFI/USDT',
+    'LTC/BTC',
+    'SHIB/USD',
+    'LINK/USDT',
+    'LINK/BTC',
+    'SUSHI/BTC',
+    'DOGE/BTC',
+    'AAVE/USDT',
+    'MKR/USD',
+    'ALGO/USD',
+    'BAT/USD',
+    'NEAR/USDT',
+    'MATIC/BTC',
+    'ALGO/USDT',
+    'WBTC/USD',
+    'PAXG/USD',
+    'DAI/USD',
+    'EUR/USD'
   ]
 
   const N = pair.length
   var x = new Array( N )
+
   for ( var i = 0; i < N; i++ ) {
 
     var pair_i = await client.getHistoricalPrices(
       {"market_name":pair[i],
-      "resolution":"15",
-      "limit":"35",
+      "resolution":"60",
+      "limit":"100",
       "start_time": start_date.toString(),
       "end_time": end_date.toString()}
       )
@@ -67,11 +96,12 @@ export default async function handler(req , res) {
       }
     return 0})
 
+
     x[i] = arr
   }
   var matrix = pcorr(x);
 
-  matrix.map(row =>
+  matrix = matrix.map(row =>
     row.map(element =>
       Math.sqrt(2*(1-element))
     )
@@ -95,9 +125,7 @@ export default async function handler(req , res) {
     nodes.push({data: {
       id: String(i),
       label: pair[i],
-      sector: "Blockchain",
-      industry: "Blockchain",
-      fullTimeEmp: "Blockchain"}})
+      sector: "Blockchain"}})
   }
   dict['nodes'] = nodes
 
@@ -114,12 +142,12 @@ export default async function handler(req , res) {
   }
   dict['edges'] = edges
 
-  dict['date'] = new Date().toLocaleDateString() 
+  dict['date'] = new Date().toLocaleDateString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) 
 
 
   var result = {all: [ dict ]}
 
-  console.log(result)
+  console.log("--- >" + JSON.stringify(result)[0])
 
   res.status(200).json(result)
 }

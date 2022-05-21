@@ -460,7 +460,7 @@ export default function GraphApp( props ) {
     animate:true,
     centerGraph: true,
     nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return 4000./edge.data("value")},
+    edgeLength:  function( edge ){ return 4000*edge.data("value")},
     stop: async function(){
       setUpdate(true)
     } , 

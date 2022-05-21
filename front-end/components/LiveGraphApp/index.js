@@ -1,6 +1,7 @@
 import cytoscape from 'cytoscape';
 import d3Force from 'cytoscape-d3-force';
 import cola from 'cytoscape-cola';
+import { getServerPath } from '../../utils/utils';
 
 
 import styles from './LiveGraphApp.module.scss'
@@ -22,8 +23,7 @@ cytoscape.use( cola );
 
 export default function LiveGraphApp( props ) {
 
-  console.log("IN LiveGraphApp")
-  console.log(JSON.stringify(props.json_data['all']))
+
 
   const graph_layout = props.layout
   const data_type = props.data_type
@@ -34,19 +34,11 @@ export default function LiveGraphApp( props ) {
   const [ctn_arr, setCtn_arr] = useState(0)
 
   const [currentDate, setCurrentDate] = useState( props.json_data['all'][0]['date'] )
-  const [playButton, setPlayButton] = useState(true)
-  const myInterval = useRef(null)
+
 
   
-  var delay_ = 1
+  const [delay, setDelay] = useState(30000)
 
-  if (graph_layout === 'concentric_layout') {
-    delay_ = 1500;
-  }
-
-  const [delay, setDelay] = useState(delay_)
-
-  const [update, setUpdate] = useState(false) 
 
   const [sideBarIsHidden, setSideBarIsHidden] = useState(false)
 
@@ -66,87 +58,6 @@ export default function LiveGraphApp( props ) {
   const MONTH_INTERVAL = 22
   const YEAR_INTERVAL = 252
 
-  const update_new_slider_pos = (step) =>{
-    
-    switch (step) {
-
-      case "m_DAY": 
-        setCtn_arr(parseInt(ctn_arr - DAY_INTERVAL))
-        break
-      case "p_DAY": 
-        setCtn_arr(parseInt(ctn_arr + DAY_INTERVAL))
-        break
-
-      case "m_WEEK":
-        setCtn_arr(parseInt(ctn_arr - WEEK_INTERVAL))
-        break
-      case "p_WEEK":
-          setCtn_arr(parseInt(ctn_arr + WEEK_INTERVAL))
-          break
-
-      case "m_MONTH":
-        setCtn_arr(parseInt(ctn_arr - MONTH_INTERVAL))
-        break
-      case "p_MONTH":
-        setCtn_arr(parseInt(ctn_arr + MONTH_INTERVAL))
-        break
-
-      case "m_YEAR":
-        setCtn_arr(parseInt(ctn_arr - YEAR_INTERVAL))
-        break
-      case "p_YEAR":
-          setCtn_arr(parseInt(ctn_arr + YEAR_INTERVAL))
-          break
-
-      default :
-        setCtn_arr(parseInt(ctn_arr))
-    }
-
-
-
-    const a = arr_elements[ ctn_arr % arr_elements.length]
-
-    setCurrentDate(a['date'])
-    cy.current.json({elements:a})
-    ly.current = cy.current.layout(layout_map[graph_layout])
-    ly.current.run()
-      
-    update_selected_node(selected_node.id , selected_node_values_oder)
-
-  }
-
-  const getDateForm = () => {
-    return <>
-    
-    <div className={styles.flex}>
-      <h4> DATES </h4>
-      <BiReset onClick={ () => {
-        props.change_layout(graph_layout)
-        props.reload_data(data_type)
-      }}/>
-    </div>
-    
-
-    <div className={styles.grid}>
-      <h5 > DAY</h5>
-      <FaAngleLeft onClick={ () => update_new_slider_pos("m_DAY")}/>
-      <FaAngleRight onClick={ () => update_new_slider_pos("p_DAY")}/>
-      
-      <h5> WEEK </h5> 
-      <FaAngleLeft onClick={ () => update_new_slider_pos("m_WEEK")}/>
-      <FaAngleRight onClick={ () => update_new_slider_pos("p_WEEK")}/>
-
-      <h5> MONTH </h5>
-      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_MONTH")}/>
-      <FaAngleDoubleRight  onClick={ () => update_new_slider_pos("p_MONTH")}/>
-
-      <h5 > YEAR </h5>
-      <FaAngleDoubleLeft onClick={ () => update_new_slider_pos("m_YEAR")}/>
-      <FaAngleDoubleRight onClick={ () => update_new_slider_pos("p_YEAR")}/>
-    </div>
-
-    </>
-  }
 
   // update selected node state and fetch node edge values
   const update_selected_node = (id , oder) => {
@@ -208,8 +119,6 @@ export default function LiveGraphApp( props ) {
       id : clicked_node.data("id"),
       label: clicked_node.data("label"),
       sector:  clicked_node.data("sector"),
-      industry:  clicked_node.data("industry"),
-      fullTimeEmp:  clicked_node.data("fullTimeEmp"),
       
       edges: oder_selected_node_values(
         clicked_node.connectedEdges().map( map_values_id(clicked_node) ),
@@ -308,26 +217,26 @@ export default function LiveGraphApp( props ) {
         {
           selector: 'node:selected',
           style: {
-            'width' : '8000px',
-            'height' : '8000px',
+            'width' : '6000px',
+            'height' : '6000px',
             "font-weight" : "800",
-            "font-size" : "1200px",
+            "font-size" : "1000px",
           }
         },
         {
           selector: ".hover",
           css: {
-            'width' : '8600px',
-            'height' : '8600px',
+            'width' : '6600px',
+            'height' : '6600px',
             "font-weight" : "800",
-            "font-size" : "1200px"
+            "font-size" : "1000px"
           }
         }
         
       ],
       layout: layout_map[graph_layout],
       
-      zoom: 0.05,
+      zoom: 0.009,
       pan: { x: 450, y: 260 },
 
       minZoom: 0.0015,
@@ -372,15 +281,18 @@ export default function LiveGraphApp( props ) {
 
   useInterval(function(){
 
+      
 
-        if (update) {
+      console.log("update --- ")
+      console.log(props.json_data['all'][0]['date'])
+      console.log(new Date().toLocaleDateString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}))
+      console.log(arr_elements, ctn_arr, arr_elements.length ,arr_elements[ ctn_arr % arr_elements.length ])
+      console.log("========")
 
-        
-        const prev_a = arr_elements[ (ctn_arr-1) % arr_elements.length ]
-        const a = arr_elements[ ctn_arr % arr_elements.length ]
+      const a = arr_elements[ ctn_arr % arr_elements.length ]
 
-        // keep track of new edges
-        for ( const e of a.edges){
+      // keep track of new edges
+      for ( const e of a.edges){
           const previous_e_1 = cy.current.$('edge[source = "'+e.data['source']+'"][target = "'+e.data['target']+'"]')
           const previous_e_2 = cy.current.$('edge[source = "'+e.data['target']+'"][target = "'+e.data['source']+'"]')
           
@@ -399,22 +311,32 @@ export default function LiveGraphApp( props ) {
           else {
             e.data['timelife'] = is_still_alive? previous_e.data('timelife') + 1 : 0
           }
-        }
-
-        setCurrentDate(a['date'])
-
-        cy.current.json({elements:a})
-        ly.current = cy.current.layout(layout_map[graph_layout])
-        ly.current.run()
-        setCtn_arr( x => x + 1 )
-        update_selected_node(selected_node.id , selected_node_values_oder)
-        setUpdate(false)
-    
-      } else {
-        setDelay(x => x)
       }
 
-  }, playButton ? null:  delay)
+        
+
+      setCurrentDate(a['date'])
+
+      cy.current.json({elements:a})
+      ly.current = cy.current.layout(layout_map[graph_layout])
+      ly.current.run()
+        
+      update_selected_node(selected_node.id , selected_node_values_oder)
+      console.log("before  prop update ")
+      const fetchData = async () => {
+        const response = await fetch(getServerPath() + 'api/')
+        const data = await response.json();
+        console.log("(LIVE) SUCCES LOAD FROM: " + getServerPath() + 'api/')
+        setArr_elements(data['all'])
+      }
+      fetchData()
+      console.log("after prop update ")
+      
+
+      
+    
+
+  }, delay)
 
   const clean_dropdown = (event, elem, style) => {
     if (typeof elem != 'undefined'){
@@ -437,10 +359,8 @@ export default function LiveGraphApp( props ) {
   // Close the dropdown if the user clicks outside of it
   window.onclick = function(event) {
 
-    clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[0],styles.layouts)
     clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[1],styles.orderBar)
-    clean_dropdown(event, document.getElementsByClassName(styles.dateForm)[0] ,styles.dateform_window) 
-
+  
   }
 
   const cola_layout = {
@@ -452,68 +372,23 @@ export default function LiveGraphApp( props ) {
     avoidOverlap: false,
     animate:true,
     centerGraph: true,
-    nodeSpacing: function( node ){ return 10; }, // space around node
-    edgeLength:  function( edge ){ return 3000/edge.data("value")},
-    stop: async function(){
-      setUpdate(true)
-    } , 
+    nodeSpacing: function( node ){ return 1; }, // space around node
+    edgeLength:  function( edge ){ return 20000*(edge.data("value")**1.5)},
+    stop: async function(){} , 
      
     maxSimulationTime: 50000, 
-    convergenceThreshold:1000,
+    convergenceThreshold:0.02,
     refresh:1
   }
 
-   /* CONCENTRIC LAYOUT */
-  const [circleIdx, setCircleIdx] = useState(0) // default 0
-  const [rangeIdxUp, setRangeIdxUp] = useState(1) // default 1
-  const [rangeIdxDown, setRangeIdxDown] = useState(0) // default 0
-
-  function nodeListForPlotSelection() {
-    let nodeList = []
-
-    if (cy.current !== null && cy.current.nodes().length > 0) {
-
-      const allNodes = [...cy.current.nodes()];
- 
-      for (var i = 0; i < allNodes.length; ++i) {
-
-        const n = allNodes[i]
-        const thisCircleIdx = (cy.current.nodes().maxDegree() - n.degree()) / 2
-        if (thisCircleIdx >= circleIdx - rangeIdxDown && thisCircleIdx <= circleIdx + rangeIdxUp) {
-          nodeList.push(n.data("sector"))
-        }
-      }
-      return nodeList;
-    } else {
-      return undefined;
-    }
-    
-  }
 
 
-  const concentric_layout = {
-    name: 'concentric',
-    fit: false,
-    clockwise: true,
-    minNodeSpacing: 3,
-    centerGraph: false,
-    spacingFactor: 2,
-    animate:true,
 
-    concentric: function( node ){
-      return node.degree()
-    },
-    levelWidth: function( nodes ){
-      return 2
-    },
-    stop: async function(){
-      setUpdate(true)
-    } ,
-  }
+
 
   const layout_map = {
     'cola_layout' : cola_layout,
-    'concentric_layout' : concentric_layout 
+    
   } 
 
 
@@ -550,43 +425,6 @@ export default function LiveGraphApp( props ) {
           </div>
 
         </div>
-
-
-
-        <div className={styles.navbar}>
-
-          <div className={styles.dateForm}>
-            <FaStopwatch onClick={() => { 
-              for ( const e of document.getElementsByClassName(styles.dateform_window) ) { e.style['display'] = "grid" }
-              }} />
-            <div className={styles.dateform_window}>
-              {getDateForm()}
-            </div>
-          </div>
-
-          {playButton ? 
-          <FaPlay onClick={ e => setPlayButton(false)}/>:
-          <FaStop onClick={ e => setPlayButton(true)}/>
-          }
-
-          <div className={styles.bar} >
-            <input type="range" min="0" max={arr_elements.length} value={ctn_arr % arr_elements.length} step="1" className={styles.slider}/>
-            <div className={styles.date} style={{left:"0%"}} >2007</div>
-            
-            <div className={styles.dateCriseMarker} style={{left:"9%"}} >
-              <div className={styles.dateCrise1}  >Financial Crisis</div>
-            </div>
-            <div className={styles.date} style={{left:"45%"}}>2015</div>
-            
-            <div className={styles.dateCriseMarker} style={{left:"84%"}} >
-            <div className={styles.dateCrise2}  >COVID-19 pandemic</div>
-            </div>
-            <div className={styles.date} style={{left:"95%"}}>2022</div>
-          </div>
-
-          
-        </div>
-
       </div>
 
 
@@ -602,24 +440,11 @@ export default function LiveGraphApp( props ) {
 
             <div className={styles.cntInfo}>
 
-              <h1 > Asset  </h1>
+              <h1 >Asset: </h1>
               <h1 > {selected_node.label}</h1>
 
             </div>
-            <div className={styles.cntInfo2}>
-              <div className={styles.cntInfo}>
-                <p>Sector </p>
-                <p>{selected_node.sector} </p>
-              </div>
-              <div className={styles.cntInfo}>
-                <p>Industry </p>
-                <p>{selected_node.industry} </p>
-              </div>
-              <div className={styles.cntInfo}>
-                <p>Full Time Employees </p>
-                <p>{selected_node.fullTimeEmp} </p>
-              </div>
-            </div>
+            
 
             <div className={styles.scrollable}>
             <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
@@ -666,29 +491,6 @@ export default function LiveGraphApp( props ) {
               </div>
             </div>
 
-            <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
-              <div className={styles.content2}>
-
-                <h3>Values distribution</h3>
-                <DensityPlot 
-                  data={selected_node.edges.map(e => e.value)}
-                  dataGlobal={cy.current.edges("[value]").map(e => e.data("value"))}
-                  color={sector_opacity_to_rgba(selected_node.sector , 0.8)}
-                />
-              </div>
-            </div>
-
-            <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
-              <div className={styles.content2}>
-
-                <h3>Sector distribution</h3>
-                <SectorPlot 
-                  data={cy.current.$('#'+selected_node.id).neighborhood().nodes("[sector]").map(e => e.data("sector"))}
-                  map_sect_col={map_sector_to_color}
-                  
-                />
-              </div>
-            </div>
 
             </div>
             
@@ -699,132 +501,7 @@ export default function LiveGraphApp( props ) {
             
             <p>Click on a node for more information of their correlations alongside interaction networks.</p>
 
-            {graph_layout === 'concentric_layout' && 
-              <>
-              <div className={styles.layout_info}>
-             
-              <h4> CONCENTRIC LAYOUT </h4>
-
-              <div className={styles.scroll_zone}>
-              <p> The concentric layout graph model assigns each node to a circular level around the centre according to its degree. High-degree nodes are positioned in the middle, while low degree nodes are positioned in the outer circles. Namely, the number of edges attached to a node determines where the node is positioned.  </p>
-              
-              <h4>Sector distribution</h4>
-              <p> Select the circle you want to visualize the sector distribution for and a range for near circles. For instance circle index 2 with range 3 will show sector distribution of the second, third and fourth circle. </p>
             
-              <div className={styles.ctnInfo2} style={{backgroundColor: rgb_opacity_to_rgba( [255,255,255] , 0.4)}}>
-                <div className={styles.content2}>
-
-                  { nodeListForPlotSelection() !== undefined &&
-                    <SectorPlot 
-                          data={nodeListForPlotSelection()}
-                          map_sect_col={map_sector_to_color}
-                    />
-
-                  }
-                </div>
-              </div>
-
-              <h4> Circle Number </h4>
-              <NumberPicker defaultValue={0} onChange={(n) => {
-                if (n >= 0) { setCircleIdx(n) }   
-              }}/>
-
-              
-              <h4> Range OUT</h4>
-              <NumberPicker defaultValue={1} onChange={(r) => {
-                if (r >= 0) { setRangeIdxUp(r) }   
-              }}/>
-
-              <h4> Range IN</h4>
-              <NumberPicker defaultValue={0} onChange={(r) => {
-                if (r >= 0) { setRangeIdxDown(r) }   
-              }}/>    
-
-            <h4> ADJUST DISTANCE PARAMETER </h4>
-
-            <button onClick={ () => {
-                  props.change_layout('concentric_layout')    
-                  props.reload_data("FCT_q0") 
-                }}>
-                0.6
-            </button>
-            <button onClick={ () => {
-                  props.change_layout('concentric_layout')    
-                  props.reload_data("FCT_q1") 
-                }}>
-                0.7
-            </button>
-            <button onClick={ () => {
-                  props.change_layout('concentric_layout')    
-                  props.reload_data("FCT_q2")
-                }}>
-                0.8
-            </button>
-              
-              <h4> INSIGHT </h4>
-              <p> When loading data for a given time window, all edges with low correlation are discarded, 
-                the threshold with which these edges are discarded can be selected here-under in terms of 
-                maximum distance (high correlation implies low distance). Thus in the periods where the stock 
-                market is generally highly correlated, all nodes tend to concentrate in the inner circles.
-                In contrast, when the market is generally less correlated, nodes are mainly positioned 
-                in the outer circles of the concentric layout.  </p>
-
-                </div>
-              </div>
-              </>}
-
-              {graph_layout === 'cola_layout' && 
-              <div className={styles.layout_info} >
-              
-                <h2> MST Layout </h2>
-
-                <div className={styles.scroll_zone}>
-                <p> Compute the minimum MST with log return values , render in a physic based animation. </p>
-                <p> the more the graph is dense the more the assets are correlated , ex during a crisis. </p>
-                
-                <p> You can change the edge value rounding (number of bins) for create the mst.</p>
-                
-                <div className={styles.options_1} >
-                   <h3>options : </h3>
-                   
-                   <button onClick={ () => {
-                          props.change_layout('cola_layout')
-                          props.reload_data("MST_123")
-                        }}>
-                        standard
-                    </button>
-
-                    <button onClick={ () => {
-                          props.change_layout('cola_layout')
-                          props.reload_data("MST_p1")
-                        }}>
-                        5
-                    </button>
-                    
-                    <button onClick={ () => {
-                            props.change_layout('cola_layout')
-                            props.reload_data("MST_p2")
-                          }}>
-                          10
-                    </button>
-
-                    <button onClick={ () => {
-                            props.change_layout('cola_layout')
-                            props.reload_data("MST_p3")
-                          }}>
-                          15
-                    </button>
-                
-                </div>
-               
-
-                
-                
-
-                </div>
-               
-              </div>}
-
 
             </>
           }
