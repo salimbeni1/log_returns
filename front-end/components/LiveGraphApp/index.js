@@ -376,8 +376,8 @@ export default function LiveGraphApp( props ) {
     edgeLength:  function( edge ){ return 20000*(edge.data("value")**1.5)},
     stop: async function(){} , 
      
-    maxSimulationTime: 50000, 
-    convergenceThreshold:0.02,
+    maxSimulationTime: 150000, 
+    convergenceThreshold:0.002,
     refresh:1
   }
 

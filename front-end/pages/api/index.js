@@ -3,13 +3,15 @@ import { RestClient } from "ftx-api";
 import  pcorr  from "compute-pcorr";
 import jsgraphs  from "js-graph-algorithms";
 
+
+
 /*
   Demonstrations on basic REST API calls
 */
 export default async function handler(req , res) {
 
   const end_date = Date.now() / 1000
-  const start_date = end_date - 30000
+  const start_date = end_date - 60000
 
   
   const key = '';
@@ -78,7 +80,7 @@ export default async function handler(req , res) {
 
     var pair_i = await client.getHistoricalPrices(
       {"market_name":pair[i],
-      "resolution":"60",
+      "resolution":"300",
       "limit":"100",
       "start_time": start_date.toString(),
       "end_time": end_date.toString()}
@@ -87,19 +89,37 @@ export default async function handler(req , res) {
 
     var arr = pair_i.result.map(function (val, idx){
       
-      if (idx != 0){
+    if (idx != 0){
         
       var el1 = pair_i.result[idx-1]
       var log_ret = Math.log(val.close/el1.close)
+/*
+      if ( isNaN(log_ret) ) {
+        console.log("NAN IN :  " + pair[i])
+      }
+      */
     
       return log_ret
       }
     return 0})
+/*
+    if ('DOGE/BTC' === pair[i]){
+      console.log(arr +  "      " + pair[i])
+    } */
 
-
-    x[i] = arr
+    //console.log(arr.length+ " " + pair[i])
+    
+    x[i] = arr.slice(1)
   }
   var matrix = pcorr(x);
+/*
+  matrix.forEach((element1,idx1) => {
+    element1.forEach((element2,idx2) =>{
+      if (isNaN(element2) ) {
+        console.log("NAN IN :  " + pair[idx2] + pair[idx1] + idx2 + idx2 )
+      }
+    }   
+  )})*/
 
   matrix = matrix.map(row =>
     row.map(element =>
