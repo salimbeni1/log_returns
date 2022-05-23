@@ -22,9 +22,9 @@ export default function ConnectedGraphApp() {
 
   /* LOAD DATA FROM SERVER */
   const fetchData = async () => {
-    const response = await fetch(getServerPath() + 'api/')
+    const response = await fetch(getServerPath() + 'api/all_opt')
     const data = await response.json();
-    console.log("SUCCES LOAD FROM: " + getServerPath() + 'api/')
+    console.log("SUCCES LOAD FROM: " + getServerPath() + 'api/all_opt')
     setJsonsData({json_data:data,
       dataIsNotLoaded: false,
       firstLoad: false

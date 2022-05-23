@@ -74,52 +74,34 @@ export default async function handler(req , res) {
   ]
 
   const N = pair.length
+  
+  
   var x = new Array( N )
+
+  const responses = await Promise.all(pair.map( pair_i => { return client.getHistoricalPrices(
+            {"market_name":pair_i,
+            "resolution":"300",
+            "limit":"100",
+            "start_time": start_date.toString(),
+            "end_time": end_date.toString()}
+            ) } ))
+
 
   for ( var i = 0; i < N; i++ ) {
 
-    var pair_i = await client.getHistoricalPrices(
-      {"market_name":pair[i],
-      "resolution":"300",
-      "limit":"100",
-      "start_time": start_date.toString(),
-      "end_time": end_date.toString()}
+    var arr = responses[i].result.map( (val, idx) => {
+        if (idx != 0){ 
+          var el1 = responses[i].result[idx-1]
+          var log_ret = Math.log(val.close/el1.close)
+          return log_ret
+        } else return 0} 
       )
-    
-
-    var arr = pair_i.result.map(function (val, idx){
       
-    if (idx != 0){
-        
-      var el1 = pair_i.result[idx-1]
-      var log_ret = Math.log(val.close/el1.close)
-/*
-      if ( isNaN(log_ret) ) {
-        console.log("NAN IN :  " + pair[i])
-      }
-      */
-    
-      return log_ret
-      }
-    return 0})
-/*
-    if ('DOGE/BTC' === pair[i]){
-      console.log(arr +  "      " + pair[i])
-    } */
-
-    //console.log(arr.length+ " " + pair[i])
-    
-    x[i] = arr.slice(1)
+      x[i] = arr.slice(1)
   }
+
+
   var matrix = pcorr(x);
-/*
-  matrix.forEach((element1,idx1) => {
-    element1.forEach((element2,idx2) =>{
-      if (isNaN(element2) ) {
-        console.log("NAN IN :  " + pair[idx2] + pair[idx1] + idx2 + idx2 )
-      }
-    }   
-  )})*/
 
   matrix = matrix.map(row =>
     row.map(element =>
@@ -167,7 +149,6 @@ export default async function handler(req , res) {
 
   var result = {all: [ dict ]}
 
-  console.log("--- >" + JSON.stringify(result)[0])
-
   res.status(200).json(result)
+
 }

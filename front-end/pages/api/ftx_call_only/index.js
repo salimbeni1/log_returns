@@ -93,81 +93,14 @@ export default async function handler(req , res) {
         
       var el1 = pair_i.result[idx-1]
       var log_ret = Math.log(val.close/el1.close)
-/*
-      if ( isNaN(log_ret) ) {
-        console.log("NAN IN :  " + pair[i])
-      }
-      */
     
       return log_ret
       }
     return 0})
-/*
-    if ('DOGE/BTC' === pair[i]){
-      console.log(arr +  "      " + pair[i])
-    } */
-
-    //console.log(arr.length+ " " + pair[i])
     
     x[i] = arr.slice(1)
   }
-  var matrix = pcorr(x);
-/*
-  matrix.forEach((element1,idx1) => {
-    element1.forEach((element2,idx2) =>{
-      if (isNaN(element2) ) {
-        console.log("NAN IN :  " + pair[idx2] + pair[idx1] + idx2 + idx2 )
-      }
-    }   
-  )})*/
-
-  matrix = matrix.map(row =>
-    row.map(element =>
-      Math.sqrt(2*(1-element))
-    )
-  )
-
-  var g = new jsgraphs.WeightedGraph(N*N);
-
-  matrix.forEach((element1,idx1) => {
-    element1.forEach((element2,idx2) =>{
-      g.addEdge(new jsgraphs.Edge(idx1, idx2, element2))
-    }   
-  )})
   
-  var kruskal = new jsgraphs.KruskalMST(g); 
-  var mst = kruskal.mst;
 
-  var dict = { }
-
-  var nodes = []
-  for ( var i = 0; i < N; i++ ) {
-    nodes.push({data: {
-      id: String(i),
-      label: pair[i],
-      sector: "Blockchain"}})
-  }
-  dict['nodes'] = nodes
-
-  var edges = []
-  for(var i=0; i < mst.length; ++i) {
-    var e = mst[i];
-    var v = e.either();
-    var w = e.other(v);
-    edges.push({data: {
-      id: 'link_' + i,
-      source: String(v),
-      target: String(w),
-      value: e.weight}})
-  }
-  dict['edges'] = edges
-
-  dict['date'] = new Date().toLocaleDateString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) 
-
-
-  var result = {all: [ dict ]}
-
-  console.log("--- >" + JSON.stringify(result)[0])
-
-  res.status(200).json(result)
+  res.status(200).json(x)
 }

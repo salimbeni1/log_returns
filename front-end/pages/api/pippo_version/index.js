@@ -25,7 +25,7 @@ export default async function handler(req , res) {
     'SOL/USD',
     'AVAX/USD',
     'BTC/USDT',
-    'LTC/USD',
+    'LTC/USD'/*,
     'LTC/USDT',
     'DOGE/USD',
     'LINK/USD',
@@ -70,7 +70,7 @@ export default async function handler(req , res) {
     'WBTC/USD',
     'PAXG/USD',
     'DAI/USD',
-    'EUR/USD'
+    'EUR/USD'*/
   ]
 
   const N = pair.length
