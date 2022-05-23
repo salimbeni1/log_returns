@@ -1,11 +1,11 @@
 
-import ConnectedGraphApp from '../components/ConnectedGraphApp'
+import LiveGraphApp from '../components/LiveGraphApp'
 import styles from '../styles/Home.module.scss'
 
 
 
 export default function Home() {
 
-  return <ConnectedGraphApp/>
+  return <LiveGraphApp/>
      
 }

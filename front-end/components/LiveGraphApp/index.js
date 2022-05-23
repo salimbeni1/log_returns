@@ -21,28 +21,24 @@ import NumberPicker from "react-widgets/NumberPicker";
 cytoscape.use( d3Force );
 cytoscape.use( cola );
 
-export default function LiveGraphApp( props ) {
+export default function LiveGraphApp( ) {
 
+  const jsonsData = useRef({})
 
+  const fetchData = async () => {
+    const response = await fetch(getServerPath() + 'api/all_opt')
+    const data = await response.json();
+    jsonsData.current = data;
+  }
 
-  const graph_layout = props.layout
-  const data_type = props.data_type
+  const graph_layout = 'cola_layout'
 
   const cy = useRef(null)
   const ly = useRef(null)
 
-  const [ctn_arr, setCtn_arr] = useState(0)
-
-  const [currentDate, setCurrentDate] = useState( props.json_data['all'][0]['date'] )
-
-
-  
-  const [delay, setDelay] = useState(30000)
-
+  const [currentDate, setCurrentDate] = useState('now')
 
   const [sideBarIsHidden, setSideBarIsHidden] = useState(false)
-
-  const [arr_elements, setArr_elements] = useState(props.json_data['all'])
 
   const [selected_node, setSelected_node] = useState({
     id : "XXX",
@@ -126,14 +122,10 @@ export default function LiveGraphApp( props ) {
         )
     })
 
-
-
-
   }
 
   const map_sector_to_color = {
-    "Blockchain"             : [128,128,128]
-
+    "Blockchain"             : [46,139,87]
   }
 
   const rgb_opacity_to_rgba  = (rgb_arr , opacity ) => {
@@ -150,11 +142,11 @@ export default function LiveGraphApp( props ) {
   }
 
 
-  useLayoutEffect(() => {
+  useLayoutEffect(async () => {
 
-
-    const elements= arr_elements[ctn_arr]
-
+    await fetchData()
+    const elements= jsonsData.current['all'][0]
+    setCurrentDate(jsonsData.current['all'][0]['date'])
     
     cy.current = cytoscape({
       container: document.getElementById('cy'),
@@ -257,10 +249,10 @@ export default function LiveGraphApp( props ) {
     
 
     cy.current.on('tap','edge', function(e){
-      // tap edge event : console.log(e.target.data())
+      
     })
     cy.current.on('tap','node', function(e){
-      // tap node event : console.log(e.target.data())
+      
       update_selected_node(e.target.data("id"))
     })
 
@@ -274,6 +266,13 @@ export default function LiveGraphApp( props ) {
       node.removeClass('hover')
       
     })
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+
+      clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[1],styles.orderBar)
+    
+    }
     
     return () => {}
   }, [])
@@ -281,15 +280,12 @@ export default function LiveGraphApp( props ) {
 
   useInterval(function(){
 
+
+      fetchData()
       
-
-      console.log("update --- ")
-      console.log(props.json_data['all'][0]['date'])
-      console.log(new Date().toLocaleDateString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}))
-      console.log(arr_elements, ctn_arr, arr_elements.length ,arr_elements[ ctn_arr % arr_elements.length ])
-      console.log("========")
-
-      const a = arr_elements[ ctn_arr % arr_elements.length ]
+      setCurrentDate(jsonsData.current['all'][0]['date'])
+      
+      const a = jsonsData.current['all'][0]
 
       // keep track of new edges
       for ( const e of a.edges){
@@ -313,30 +309,15 @@ export default function LiveGraphApp( props ) {
           }
       }
 
-        
-
-      setCurrentDate(a['date'])
-
       cy.current.json({elements:a})
       ly.current = cy.current.layout(layout_map[graph_layout])
       ly.current.run()
         
       update_selected_node(selected_node.id , selected_node_values_oder)
-      console.log("before  prop update ")
-      const fetchData = async () => {
-        const response = await fetch(getServerPath() + 'api/')
-        const data = await response.json();
-        console.log("(LIVE) SUCCES LOAD FROM: " + getServerPath() + 'api/')
-        setArr_elements(data['all'])
-      }
-      fetchData()
-      console.log("after prop update ")
       
+  }, 10000)
 
-      
-    
 
-  }, delay)
 
   const clean_dropdown = (event, elem, style) => {
     if (typeof elem != 'undefined'){
@@ -356,16 +337,11 @@ export default function LiveGraphApp( props ) {
     } 
   }
 
-  // Close the dropdown if the user clicks outside of it
-  window.onclick = function(event) {
-
-    clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[1],styles.orderBar)
   
-  }
 
   const cola_layout = {
     name: 'cola',
-    infinite: false,
+    infinite: true,
     randomize: false,
     fit: false,
     padding: 30,
@@ -373,7 +349,7 @@ export default function LiveGraphApp( props ) {
     animate:true,
     centerGraph: true,
     nodeSpacing: function( node ){ return 1; }, // space around node
-    edgeLength:  function( edge ){ return 20000*(edge.data("value")**1.5)},
+    edgeLength:  function( edge ){ return 10000*(edge.data("value")**0.5)},
     stop: async function(){} , 
      
     maxSimulationTime: 150000, 
@@ -497,7 +473,7 @@ export default function LiveGraphApp( props ) {
             </> : 
             <>
 
-            <h1>Clustering Financial Time Series</h1>
+            <h1>Real-time cryptocurencies correlations</h1>
             
             <p>Click on a node for more information of their correlations alongside interaction networks.</p>
 
@@ -512,11 +488,3 @@ export default function LiveGraphApp( props ) {
     </div>
   )
 }
-
-LiveGraphApp.defaultProps = {
-  layout: 'cola_layout',
-  json_data: { "all" : { } },
-  data_type: 'MST',
-  reload_data: () => console.log("NOT IMPLEMENTED: assign props to LiveGraphApp"),
-  change_layout: () => console.log("NOT IMPLEMENTED: assign props to LiveGraphApp")
-};
