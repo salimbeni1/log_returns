@@ -142,8 +142,12 @@ export default function LiveGraphApp( ) {
   }
 
 
-  useLayoutEffect(async () => {
+  useLayoutEffect(() => {
 
+    (async () => {
+      
+    
+    
     await fetchData()
     const elements= jsonsData.current['all'][0]
     setCurrentDate(jsonsData.current['all'][0]['date'])
@@ -273,6 +277,7 @@ export default function LiveGraphApp( ) {
       clean_dropdown(event, document.getElementsByClassName(styles.dropdown)[1],styles.orderBar)
     
     }
+  })();
     
     return () => {}
   }, [])
@@ -392,6 +397,7 @@ export default function LiveGraphApp( ) {
                 
           </div>
 
+          { /*
           <div className={styles.legend}>
             {Object.keys(map_sector_to_color).map( (el , idx) => {
             return <div key={idx} className={styles.lgditm}>
@@ -399,6 +405,7 @@ export default function LiveGraphApp( ) {
                 {el}
               </div> })}
           </div>
+            */}
 
         </div>
       </div>
