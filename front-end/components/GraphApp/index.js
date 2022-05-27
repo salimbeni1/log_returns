@@ -604,15 +604,12 @@ export default function GraphApp( props ) {
             <input type="range" min="0" max={arr_elements.length} value={ctn_arr % arr_elements.length} step="1" className={styles.slider}/>
             <div className={styles.date} style={{left:"0%"}} >2007</div>
             
-            <div className={styles.dateCriseMarker} style={{left:"9%"}} >
+            <div className={styles.dateCriseMarker} style={{left:"22%"}} >
               <div className={styles.dateCrise1}  >Financial Crisis</div>
             </div>
-            <div className={styles.date} style={{left:"45%"}}>2015</div>
+            <div className={styles.date} style={{left:"45%"}}>2010</div>
             
-            <div className={styles.dateCriseMarker} style={{left:"84%"}} >
-            <div className={styles.dateCrise2}  >COVID-19 pandemic</div>
-            </div>
-            <div className={styles.date} style={{left:"95%"}}>2022</div>
+            <div className={styles.date} style={{left:"95%"}}>2013</div>
           </div>
 
           
