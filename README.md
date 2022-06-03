@@ -28,6 +28,8 @@ yarn dev
 
 ## Back-end
 
+Our setup is very flexible , we have a preview with a static dataset of asset logreturns that you can find in the public folder of the front-end, but we can also connect to an API. In our real-time page we connect to the FTX api for crypto-currencies returns using serverless functions for the backend graph computation, but for more custom and optimized scenarios we have a docker container in case you want to deploy your own API and connect the front-end. 
+
 ```
 cd back-end
 docker compose up
