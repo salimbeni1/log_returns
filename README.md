@@ -4,8 +4,8 @@
 ### Visualization
 
 Website link :  [here](https://log-returns.vercel.app).
-Video demo :  [here](https://log-returns.vercel.app).
-Project process book : [here](https://log-returns.vercel.app).
+Video demo :  [here](no-link).
+Project process book : [here](/milestones/Team%20AvanTuRiais%20-%20PROCESS%20BOOK.pdf).
 
 
 
