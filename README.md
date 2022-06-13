@@ -1,10 +1,13 @@
 # log_returns 📈
 
-### Visualization
 
-Website link : [here](https://log-returns.vercel.app).
-Video demo : [here](https://drive.google.com/file/d/1wPa14Ffe22kQ0mkvphe38TNsmUZIkYer/view?usp=sharing).
-Project process book : [here](/milestones/Team%20AvanTuRiais%20-%20PROCESS%20BOOK.pdf).
+![screenshot](Screenshot.png)
+
+- Website link : [here](https://log-returns.vercel.app) !!!
+
+- Video demo : [here](https://drive.google.com/file/d/1wPa14Ffe22kQ0mkvphe38TNsmUZIkYer/view?usp=sharing).
+
+- Project process book : [here](/milestones/Team%20AvanTuRiais%20-%20PROCESS%20BOOK.pdf).
 
 ### Context
 
